@@ -17,7 +17,11 @@
             </MenuItem>
             <MenuItem Header="帮助">
                 <MenuItem Header="关于" />
-                <MenuItem Header="打开日志窗口" />
+                <MenuItem Header="打开日志窗口"  Click="OpenLogWindow_Click" />
+            </MenuItem>
+            <!-- 在主窗口菜单中添加测试菜单项 -->
+            <MenuItem Header="开发工具">
+                <MenuItem Header="存储路径测试" Click="StoragePathTest_Click"/>
             </MenuItem>
         </Menu>
         
@@ -29,11 +33,19 @@
                    VerticalAlignment="Center"/>
         <!-- 状态栏 -->
         <Grid>
-            <StackPanel>
-                <Button Content="加载模板" Click="LoadTemplates_Click" Margin="10"  />
+            <StackPanel  Margin="30" >
+                <Button Content="加载模板" Click="LoadTemplates_Click"  
+                        Padding="10,5" 
+                        Margin="10"
+                        HorizontalAlignment="Left"/>
                 <!-- 在 MainWindow.xaml 中的适当位置添加此按钮 -->
                 <Button Content="测试模板功能" 
                         Click="TestTemplateButton_code_Click"
+                        Padding="10,5" 
+                        Margin="10"
+                        HorizontalAlignment="Left"/>
+                <Button Content="测试模板功能：可以选择路径"  
+                        Click="TestTemplateButton_2_Click"
                         Padding="10,5" 
                         Margin="10"
                         HorizontalAlignment="Left"/>

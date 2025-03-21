@@ -14,6 +14,7 @@ using Serilog; // 这里假设使用 Serilog 的 Logger 类型
 using WeChatMomentSimulator.Core.Interfaces;
 using WeChatMomentSimulator.Core.Models.Template;
 using WeChatMomentSimulator.Services.Storage;
+using WeChatMomentSimulator.UI.Testing;
 using WeChatMomentSimulator.UI.ViewModels.Templates;
 using WeChatMomentSimulator.UI.Views.Templates;
 
@@ -223,5 +224,24 @@ protected override void OnKeyDown(KeyEventArgs e)
             _logger.Error(ex, "测试模板功能时发生错误");
             MessageBox.Show($"测试失败: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+    }
+
+    private void TestTemplateButton_2_Click(object sender, RoutedEventArgs e)
+    {
+        
+       
+    }
+
+    private void StoragePathTest_Click(object sender, RoutedEventArgs e)
+    {
+        var pathService = _serviceProvider.GetService(typeof(IPathService)) as IPathService;
+        var testWindow = new StoragePathTestWindow(pathService, _serviceProvider);
+        testWindow.Show();
+         
+    }
+
+    private void OpenLogWindow_Click(object sender, RoutedEventArgs e)
+    {
+        throw new NotImplementedException();
     }
 }
