@@ -1,0 +1,89 @@
+﻿<!-- filepath: f:\github\WeChatMomentSimulator\WeChatMomentSimulator.UI\Views\Dialogs\FirstRunStorageDialog.xaml -->
+<Window x:Class="WeChatMomentSimulator.UI.Views.Dialogs.FirstRunStorageDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WeChatMomentSimulator.UI.Views.Dialogs"
+        mc:Ignorable="d"
+        Title="欢迎使用微信朋友圈模拟器"
+        Height="340" Width="500"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- 图标和标题 -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15">
+            <Image Source="/Assets/AppIcon.png" Width="32" Height="32" Margin="0,0,10,0" />
+            <TextBlock Text="欢迎使用微信朋友圈模拟器" 
+                       FontSize="20" 
+                       FontWeight="SemiBold" 
+                       VerticalAlignment="Center"/>
+        </StackPanel>
+        
+        <!-- 欢迎信息 -->
+        <TextBlock Grid.Row="1" 
+                   Text="感谢您选择使用微信朋友圈模拟器。在我们开始之前，请留意以下关于数据存储的重要信息。" 
+                   TextWrapping="Wrap" 
+                   Margin="0,0,0,15"/>
+        
+        <!-- 存储位置信息 -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,15">
+            <TextBlock Text="数据存储位置" 
+                       FontWeight="Medium" 
+                       Margin="0,0,0,5"/>
+            
+            <TextBlock TextWrapping="Wrap" 
+                       Margin="0,0,0,10">
+                您的模板、媒体资源和其他数据将保存在以下位置：
+            </TextBlock>
+            
+            <Border Background="#F5F5F5" 
+                    BorderBrush="#DDDDDD" 
+                    BorderThickness="1" 
+                    Padding="10" 
+                    CornerRadius="3">
+                <TextBlock Text="{Binding DefaultStoragePath}" 
+                           TextWrapping="Wrap"/>
+            </Border>
+        </StackPanel>
+        
+        <!-- 说明 -->
+        <TextBlock Grid.Row="3" 
+                   TextWrapping="Wrap" 
+                   Margin="0,0,0,15">
+            您以后可以随时在"设置"中查看或更改数据存储位置。所有用户创建的内容都将永久保存在这个位置，除非您手动删除。
+        </TextBlock>
+        
+        <!-- 自定义选项 -->
+        <StackPanel Grid.Row="4" VerticalAlignment="Bottom">
+            <CheckBox Content="不再显示此消息" 
+                      IsChecked="{Binding DoNotShowAgain}"/>
+        </StackPanel>
+        
+        <!-- 按钮区 -->
+        <StackPanel Grid.Row="5" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,15,0,0">
+            <Button Content="更改位置..." 
+                    Padding="15,5" 
+                    Margin="0,0,10,0"
+                    Click="ChangeLocation_Click"/>
+                    
+            <Button Content="确定" 
+                    Padding="20,5" 
+                    IsDefault="True" 
+                    Click="OK_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

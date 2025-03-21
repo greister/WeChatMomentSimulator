@@ -1,21 +1,22 @@
 ﻿// WeChatMomentSimulator.UI/ViewModels/MainViewModel.cs
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using WeChatMomentSimulator.Core.Interfaces;
 
 namespace WeChatMomentSimulator.UI.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
-        private readonly IAppLogger _logger;
+        private readonly ILogger<MainWindow> _logger;
         private string _statusMessage = "就绪";
         
-        public MainViewModel(IAppLogger logger, bool isDevEnvironment)
+        public MainViewModel(ILogger<MainWindow> logger)
         {
             _logger = logger;
-            IsDevEnvironment = isDevEnvironment;
             
-            _logger.Debug("MainViewModel 已初始化");
+            _logger.LogDebug("MainViewModel 已初始化");
         }
         
         public string StatusMessage
@@ -27,7 +28,7 @@ namespace WeChatMomentSimulator.UI.ViewModels
                 {
                     _statusMessage = value;
                     OnPropertyChanged();
-                    _logger.Debug("状态已更新: {Status}", value);
+                    _logger.LogDebug("状态已更新: {Status}", value);
                 }
             }
         }
@@ -42,5 +43,9 @@ namespace WeChatMomentSimulator.UI.ViewModels
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+        
+       
+        
+        
     }
 }

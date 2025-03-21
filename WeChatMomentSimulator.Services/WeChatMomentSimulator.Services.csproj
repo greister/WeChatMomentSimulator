@@ -17,6 +17,11 @@
     <PackageReference Include="SkiaSharp.Svg" Version="1.60.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="EnvirmentService.cs" />
+    <Compile Remove="Infrastructure\EnvironmentService.cs" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

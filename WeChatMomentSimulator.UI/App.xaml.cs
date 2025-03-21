@@ -1,105 +1,191 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Windows;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 using WeChatMomentSimulator.Core.Interfaces;
 using WeChatMomentSimulator.Services.Infrastructure;
+using WeChatMomentSimulator.Services.Repositories;
+using WeChatMomentSimulator.Services.Storage;
+using WeChatMomentSimulator.UI.Settings;
 using WeChatMomentSimulator.UI.ViewModels;
-
+using WeChatMomentSimulator.UI.Views;
 
 namespace WeChatMomentSimulator.UI
 {
     public partial class App : Application
     {
-        private ServiceProvider _serviceProvider;
-        private bool _isDevMode;
-        
-        // 引入 Windows API 函数
-        [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool AllocConsole();
+        private IHost _host;
+        private LogWindow? _logWindow;
+        private static readonly object _logLock = new();
 
-        [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool FreeConsole();
- 
+        public App()
+        {
+            CheckEnvironment();
+            _host = CreateHostBuilder().Build();
+            // 在构造函数中初始化日志窗口
+            _logWindow = new LogWindow();
+            _logWindow.Closed += (s, e) => _logWindow = null; // 窗口关闭时置空
+            InitializeServices();
+        }
+
+        private void CheckEnvironment()
+        {
+            // 这里可以添加环境检测的逻辑
+        }
+
+        private IHostBuilder CreateHostBuilder()
+        {
+            return Host.CreateDefaultBuilder()
+                .ConfigureAppConfiguration(ConfigureApp)
+                .UseSerilog(ConfigureSerilog)
+                .ConfigureServices(ConfigureServices);
+        }
+
+        private void ConfigureApp(HostBuilderContext hostContext, IConfigurationBuilder config)
+        {
+            config.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+        }
+
+        private void ConfigureSerilog(HostBuilderContext hostContext, LoggerConfiguration loggerConfiguration)
+        {
+            loggerConfiguration
+                .ReadFrom.Configuration(hostContext.Configuration)
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.WithProperty("InstanceId", Guid.NewGuid().ToString("N")[..8])  // 默认添加实例ID
+                .WriteTo.Sink(new LogWindowSink(this))
+                .WriteTo.Console()
+                .WriteTo.File(Path.Combine("logs", "log-.txt"), rollingInterval: RollingInterval.Day);
+        }
+
+        private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+        {
+            
+            // 添加路径服务 (新增)
+            services.AddSingleton<IPathService, PathService>();
+            // 注册配置服务
+
+            services.AddTransient<StorageSettingsViewModel>();
+            services.AddTransient<StorageSettingsView>(provider =>
+
+                new StorageSettingsView(provider.GetRequiredService<StorageSettingsViewModel>()));
+
+
+            // 注册核心服务
+            services.AddSingleton<FileStorageService>();
+            services.AddSingleton<FileTemplateStorage>();
+            services.AddSingleton<ITemplateRepository, TemplateRepository>();
+            services.AddSingleton<ITemplateStorage, FileTemplateStorage>();
+            services.AddSingleton<TemplateManager>();
+
+            // 注册视图模型
+            services.AddSingleton<MainViewModel>();
+
+            // 注册主窗口 - 修正以下代码
+            services.AddSingleton<MainWindow>(provider =>
+                new MainWindow(
+                    provider, // 提供 IServiceProvider
+                    provider.GetRequiredService<Serilog.ILogger>() // 提供 ILogger
+                )
+                {
+                    // 设置 DataContext 为 MainViewModel
+                    DataContext = provider.GetRequiredService<MainViewModel>()
+                }
+            );
+
+            // 添加日志支持
+            services.AddLogging(configure => { configure.AddSerilog(); });
+        }
+
+        private void InitializeServices()
+        {
+            // 这里可以添加服务初始化的逻辑
+        }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            // 初始化日志窗口
+            // 确保日志窗口存在
+            if (_logWindow == null)
+            {
+                _logWindow = new LogWindow();
+            }
 
-            try
+            ShowMainWindow();
+            var logger = _host.Services.GetRequiredService<ILogger<App>>();
+            logger.LogInformation("应用界面已启动");
+
+            // 全局异常处理
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
-                // 重定向标准输出流到控制台
-                var standardOutput = new System.IO.StreamWriter(Console.OpenStandardOutput())
-                {
-                    AutoFlush = true
-                };
-                Console.SetOut(standardOutput);
-                
-                Console.WriteLine("===================================");
-                Console.WriteLine("应用程序正在启动...");
-                Console.WriteLine("===================================");
-                // 1. 简单的环境检测
-             
-                   // 1. 简单的环境检测
-                _isDevMode = File.Exists("development.flag");
-                Console.WriteLine($"环境模式: {(_isDevMode ? "开发" : "生产")}");
-                
-                // 2. 初始化Serilog (全局配置)
-                SerilogLogger.Configure(_isDevMode);
-                
-                // 3. 配置依赖注入
-                var services = new ServiceCollection();
-                
-                // 注册日志服务
-                services.AddSingleton<IAppLogger, SerilogLogger>();
-                
-                // 注册ViewModel
-                services.AddSingleton<MainViewModel>(provider => 
-                    new MainViewModel(provider.GetRequiredService<IAppLogger>(), _isDevMode));
-                
-                // 注册主窗口
-                services.AddSingleton<MainWindow>(provider =>
-                    new MainWindow { DataContext = provider.GetRequiredService<MainViewModel>() });
-                
-                _serviceProvider = services.BuildServiceProvider();
-                
-                // 4. 获取日志服务实例
-                var logger = _serviceProvider.GetRequiredService<IAppLogger>();
-                logger.Info("应用启动中");
-                
-                // 5. 显示主窗口
-                var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
-                mainWindow.Show();
-                
-                logger.Info("应用已成功启动");
-            }
-            catch (Exception ex)
+                Log.Fatal(e.ExceptionObject as Exception, "未处理的异常");
+                ShowLogWindow();
+            };
+
+            // 添加快捷键支持
+            this.Dispatcher.UnhandledException += (s, e) =>
             {
-                Console.WriteLine($"应用启动错误: {ex.Message}");
-                MessageBox.Show($"应用启动失败: {ex.Message}", "错误", 
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                Log.Error(e.Exception, "UI线程异常");
+                e.Handled = true;
+            };
+
+        }
+
+        public void ShowLogWindow()
+        {
+            _logWindow?.Show();
+            _logWindow?.Activate();
+        }
+
+        private void ShowMainWindow()
+        {
+            var mainWindow = _host.Services.GetRequiredService<MainWindow>();
+            mainWindow.Show();
         }
 
         protected override void OnExit(ExitEventArgs e)
         {
             try
             {
-                var logger = _serviceProvider?.GetService<IAppLogger>();
-                logger?.Info("应用正在关闭");
-                
-              
-                
-                _serviceProvider?.Dispose();
+                var logger = _host.Services.GetRequiredService<ILogger<App>>();
+                logger.LogInformation("应用正在关闭");
+                Log.CloseAndFlush();
+                _host.Dispose();
             }
-            catch
+            catch (Exception ex)
             {
-                // 忽略退出时的错误
+                Console.WriteLine($"应用退出时发生错误: {ex.Message}");
             }
-            
-            base.OnExit(e);
+            finally
+            {
+                base.OnExit(e);
+            }
         }
-        
-      
+
+        // 自定义Serilog Sink
+        // 修改LogWindowSink
+        public class LogWindowSink : Serilog.Core.ILogEventSink
+        {
+            private readonly App _app;
+
+            public LogWindowSink(App app)
+            {
+                _app = app;
+            }
+
+            public void Emit(LogEvent logEvent)
+            {
+                var entry = new LogEntry(logEvent);
+                _app.Dispatcher.Invoke(() => _app._logWindow?.AppendLog(entry));
+            }
+        }
     }
-    
 }

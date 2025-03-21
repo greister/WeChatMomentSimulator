@@ -1,6 +1,7 @@
 ﻿<Window x:Class="WeChatMomentSimulator.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:templates="clr-namespace:WeChatMomentSimulator.UI.Views.Templates"
         Title="微信朋友圈模拟器" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
@@ -16,6 +17,7 @@
             </MenuItem>
             <MenuItem Header="帮助">
                 <MenuItem Header="关于" />
+                <MenuItem Header="打开日志窗口" />
             </MenuItem>
         </Menu>
         
@@ -25,8 +27,38 @@
                    FontSize="24"
                    HorizontalAlignment="Center" 
                    VerticalAlignment="Center"/>
-        
         <!-- 状态栏 -->
+        <Grid>
+            <StackPanel>
+                <Button Content="加载模板" Click="LoadTemplates_Click" Margin="10"  />
+                <!-- 在 MainWindow.xaml 中的适当位置添加此按钮 -->
+                <Button Content="测试模板功能" 
+                        Click="TestTemplateButton_code_Click"
+                        Padding="10,5" 
+                        Margin="10"
+                        HorizontalAlignment="Left"/>
+                <TextBlock x:Name="StatusText" Margin="10"/>
+                <Border BorderBrush="Gray" BorderThickness="1" Margin="10">
+                    <ItemsControl x:Name="TemplatesItemsControl">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="LightGray" BorderThickness="1" Margin="5" Padding="5">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Metadata.Name}" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding Metadata.Author}" FontStyle="Italic"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+            </StackPanel>
+        </Grid>
         <StatusBar Grid.Row="2">
             <TextBlock Text="{Binding StatusMessage}" Margin="5,0"/>
         </StatusBar>

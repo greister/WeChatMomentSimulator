@@ -8,14 +8,12 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0-preview.1.25080.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.3" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="SkiaSharp.Views.WPF" Version="3.116.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\" />
   </ItemGroup>
 
   <PropertyGroup>
