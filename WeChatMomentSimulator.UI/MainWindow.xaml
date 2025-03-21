@@ -1,0 +1,34 @@
+﻿<Window x:Class="WeChatMomentSimulator.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="微信朋友圈模拟器" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- 顶部菜单栏 -->
+        <Menu Grid.Row="0">
+            <MenuItem Header="文件">
+                <MenuItem Header="退出" />
+            </MenuItem>
+            <MenuItem Header="帮助">
+                <MenuItem Header="关于" />
+            </MenuItem>
+        </Menu>
+        
+        <!-- 主内容区域 -->
+        <TextBlock Grid.Row="1" 
+                   Text="欢迎使用微信朋友圈模拟器" 
+                   FontSize="24"
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Center"/>
+        
+        <!-- 状态栏 -->
+        <StatusBar Grid.Row="2">
+            <TextBlock Text="{Binding StatusMessage}" Margin="5,0"/>
+        </StatusBar>
+    </Grid>
+</Window>

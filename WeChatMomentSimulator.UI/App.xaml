@@ -1,0 +1,12 @@
+﻿<Application x:Class="WeChatMomentSimulator.UI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:WeChatMomentSimulator.UI"
+            xmlns:system="clr-namespace:System;assembly=mscorlib">
+    <Application.Resources>
+    <ResourceDictionary>
+        <!-- 值转换器 -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </ResourceDictionary>
+    </Application.Resources>
+</Application>
