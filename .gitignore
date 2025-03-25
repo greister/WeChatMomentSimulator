@@ -1,0 +1,124 @@
+# .NET 构建输出
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# Visual Studio 文件
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+.idea/
+*.ipr
+*.iws
+*.DotSettings
+*.DotSettings.user
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.coverage
+
+# 项目特定文件夹
+Logs/
+logs/
+Output/
+output/
+[Tt]emp/
+.DS_Store
+Thumbs.db
+
+# 工具生成的文件
+_NCrunch_*
+*.plg
+*.opt
+*.vspx
+*.sap
+.JustCode
+*.GhostDoc.xml
+*.VC.db
+*.VC.VC.opendb
+
+# NuGet 包
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# MSTest 测试结果
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUNIT
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+
+# 构建结果
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
+
+# 基准测试结果
+BenchmarkDotNet.Artifacts/
+
+# 临时文件
+*.swp
+*.bak
+*.cache
+*.log
+*.tmp
+*.tmp_proj
+*~
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+node_modules/
+orleans.codegen.cs
+
+# 本地历史文件
+.localhistory/
+
+# 应用程序特定
+appsettings.Development.json
+appsettings.Staging.json
+appsettings.Production.json
+launchSettings.json
+
+# SQL Server 文件
+*.mdf
+*.ldf
+*.ndf
+
+# 生成的模板文件
+Templates/user/*
+!Templates/user/.gitkeep
+
+# 生成的输出和临时文件
+Output/*
+!Output/.gitkeep
