@@ -7,9 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using WeChatMomentSimulator.Core.Interfaces;
 using WeChatMomentSimulator.Core.Interfaces.Repositories;
 using WeChatMomentSimulator.Core.Interfaces.Services;
 using WeChatMomentSimulator.Core.Logging;
+using WeChatMomentSimulator.Desktop.Rendering;
 using WeChatMomentSimulator.Desktop.Services;
 using WeChatMomentSimulator.Services.Repositories;
 using WeChatMomentSimulator.Services.Services;
@@ -63,16 +65,21 @@ namespace WeChatMomentSimulator.Desktop
                     string templateDirectory = Path.Combine(baseDirectory, "Templates");
 
                     // 注册核心服务
+                    services.AddSingleton<IPlaceholderParser, PlaceholderParser>();
                     services.AddSingleton<IFileService, FileService>();
                     services.AddSingleton<ITemplateRepository>(sp =>
                         new TemplateRepository(
                             sp.GetRequiredService<IFileService>(),
                             templateDirectory)
                     );
-                    
+                    // 在应用程序依赖项注册处添加
+                    services.AddSingleton<ISvgRenderer, SvgRenderer>();
+                    services.AddSingleton<ITemplateManager, TemplateManager>();
+                    services.AddSingleton<SvgTemplateEditorViewModel>();
+                    services.AddTransient<SvgTemplateEditorWindow>();
                     
                     // 注册应用服务
-                    services.AddSingleton<ITemplateService, TemplateService>();
+                    //services.AddSingleton<ITemplateService, TemplateService>();
                     // In ConfigureServices method
                     services.AddSingleton<IDialogService, DialogService>();
                     // In ConfigureServices method

@@ -122,3 +122,4 @@ Templates/user/*
 # 生成的输出和临时文件
 Output/*
 !Output/.gitkeep
+Temp/*
