@@ -5,6 +5,10 @@
   <ItemGroup>
     <!-- 在此定义所有包版本 -->
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageVersion Include="MaterialDesignColors" Version="5.2.1" />
+    <PackageVersion Include="MaterialDesignThemes" Version="5.2.1" />
+    <PackageVersion Include="MaterialDesignThemes.Wpf" Version="1.0.1" />
+    <PackageVersion Include="RedSheeps.Wpf.MaterialDesignThemes" Version="0.2.0" />
     <PackageVersion Include="Serilog" Version="4.2.0" />
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="7.0.0" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="9.0.1" />

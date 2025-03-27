@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="WeChatMomentSimulator.Desktop.Views.MomentPreviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:WeChatMomentSimulator.Desktop.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="*" d:DesignWidth="*"
+             MaxWidth="320">
+
+    <Border Background="{StaticResource SurfaceBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="6">
+        <DockPanel>
+            <Grid DockPanel.Dock="Top" Margin="15,15,15,15">
+                <TextBlock Text="朋友圈预览" FontSize="16" FontWeight="SemiBold"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="刷新" 
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="{StaticResource SecondaryBrush}" 
+                            Margin="0,0,10,0"/>
+                    <Button Content="导出" 
+                            Background="{StaticResource PrimaryBrush}" 
+                            Foreground="White"
+                            Padding="10,3"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- 缩放控制器 - 调整为更紧凑的布局 -->
+            <Grid DockPanel.Dock="Top" Margin="15,0,15,10">
+                <Slider Value="100" 
+                        Minimum="50" Maximum="150" 
+                        TickFrequency="10" TickPlacement="None"
+                        Width="150" HorizontalAlignment="Left"/>
+                <TextBlock Text="缩放: 100%" 
+                           FontSize="12" 
+                           HorizontalAlignment="Right" 
+                           VerticalAlignment="Center"/>
+            </Grid>
+
+            <!-- 预览区 - 适应更窄的布局 -->
+            <Border Background="{StaticResource BackgroundBrush}" 
+                    Margin="15,0,15,15"
+                    CornerRadius="20" 
+                    Width="280" Height="520">
+                <Grid>
+                    <TextBlock Text="朋友圈预览区域" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center"/>
+
+                    <!-- 这里将来会放置 SVG 渲染组件 -->
+                    <ContentControl x:Name="SVGRenderHost"/>
+                </Grid>
+            </Border>
+        </DockPanel>
+    </Border>
+</UserControl>

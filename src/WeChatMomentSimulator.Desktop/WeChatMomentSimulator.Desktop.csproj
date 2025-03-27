@@ -6,7 +6,11 @@
   </ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="MaterialDesignColors" />
+		<PackageReference Include="MaterialDesignThemes" />
+		<PackageReference Include="MaterialDesignThemes.Wpf" />
 		<PackageReference Include="Microsoft.Extensions.Logging" />
+		<PackageReference Include="RedSheeps.Wpf.MaterialDesignThemes" />
 		<PackageReference Include="Serilog" />
 	</ItemGroup>
   <ItemGroup>
@@ -19,10 +23,33 @@
     <None Update="Assets\app.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Remove="Views\MenuBarView.xaml.cs2222" />
+    <None Remove="Views\MenuBarView.xaml22" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Tests\TestDesign3.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Tests\TestMenuBarView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\MainWindows.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Remove="MainWindow.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="MainWindow.xaml.cs" />
   </ItemGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>

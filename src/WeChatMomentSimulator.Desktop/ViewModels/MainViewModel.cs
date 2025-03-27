@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
-using WeChatMomentSimulator.Core.Interfaces.Services;
-using WeChatMomentSimulator.Core.Models.Template;
-using WeChatMomentSimulator.Core.Models.Template.Enums;
 using WeChatMomentSimulator.Desktop.Commands;
 using WeChatMomentSimulator.Core.Logging;
 using LoggerExtensions = WeChatMomentSimulator.Core.Logging.LoggerExtensions;
@@ -16,518 +9,383 @@ using LoggerExtensions = WeChatMomentSimulator.Core.Logging.LoggerExtensions;
 namespace WeChatMomentSimulator.Desktop.ViewModels
 {
     /// <summary>
-    /// 主窗口视图模型
+    /// 主窗口的视图模型
     /// </summary>
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : ViewModelBase
     {
-        private readonly ITemplateService _templateService;
         private readonly ILogger<MainViewModel> _logger;
 
-        private bool _isLoading;
-        private bool _isSaving;
+        #region Properties
+
+        // Command properties
+        private ICommand _saveTemplateCommand;
+        public ICommand SaveTemplateCommand
+        {
+            get => _saveTemplateCommand;
+            set => SetProperty(ref _saveTemplateCommand, value);
+        }
+
+        private ICommand _exportImageCommand;
+        public ICommand ExportImageCommand
+        {
+            get => _exportImageCommand;
+            set => SetProperty(ref _exportImageCommand, value);
+        }
+
+        private ICommand _editTemplateCommand;
+        public ICommand EditTemplateCommand
+        {
+            get => _editTemplateCommand;
+            set => SetProperty(ref _editTemplateCommand, value);
+        }
+
+        private ICommand _advancedSettingsCommand;
+        public ICommand AdvancedSettingsCommand
+        {
+            get => _advancedSettingsCommand;
+            set => SetProperty(ref _advancedSettingsCommand, value);
+        }
+
+        private ICommand _showStatisticsCommand;
+        public ICommand ShowStatisticsCommand
+        {
+            get => _showStatisticsCommand;
+            set => SetProperty(ref _showStatisticsCommand, value);
+        }
+
+        private ICommand _saveUserSettingsCommand;
+        public ICommand SaveUserSettingsCommand
+        {
+            get => _saveUserSettingsCommand;
+            set => SetProperty(ref _saveUserSettingsCommand, value);
+        }
+
+        // Status properties
         private string _statusMessage;
-        private string _errorMessage;
-        private Template _selectedTemplate;
-        private string _previewContent;
-        private TemplateType _currentTemplateType = TemplateType.Moment;
-
-        /// <summary>
-        /// 构造函数
-        /// </summary>
-        /// <param name="templateService">模板服务</param>
-        public MainViewModel(ITemplateService templateService)
-        {
-            _templateService = templateService ?? throw new ArgumentNullException(nameof(templateService));
-            _logger = LoggerExtensions.GetLogger<MainViewModel>();
-
-            Templates = new ObservableCollection<Template>();
-            TemplateVariables = new ObservableCollection<TemplateVariableViewModel>();
-
-            // 初始化命令
-            LoadTemplatesCommand = new RelayCommand(async _ => await LoadTemplatesAsync(), _ => !IsLoading);
-            NewTemplateCommand = new RelayCommand(_ => CreateNewTemplate(), _ => !IsSaving);
-            SaveTemplateCommand = new RelayCommand(async _ => await SaveTemplateAsync(), _ => !IsSaving && SelectedTemplate != null);
-            DeleteTemplateCommand = new RelayCommand(async _ => await DeleteTemplateAsync(), _ => !IsSaving && SelectedTemplate != null && !SelectedTemplate.IsDefault);
-            ExportImageCommand = new RelayCommand(async _ => await ExportImageAsync(), _ => !IsLoading && !string.IsNullOrEmpty(PreviewContent));
-            
-            _logger.LogInformation("MainViewModel 已初始化");
-            
-            // 自动加载模板
-            _ = LoadTemplatesAsync();
-        }
-
-        /// <summary>
-        /// 属性变更事件
-        /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// 触发属性变更事件
-        /// </summary>
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        /// <summary>
-        /// 设置属性值并触发属性变更事件
-        /// </summary>
-        protected bool SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
-        {
-            if (Equals(storage, value)) return false;
-            storage = value;
-            OnPropertyChanged(propertyName);
-            return true;
-        }
-
-        /// <summary>
-        /// 模板集合
-        /// </summary>
-        public ObservableCollection<Template> Templates { get; }
-
-        /// <summary>
-        /// 模板变量视图模型集合
-        /// </summary>
-        public ObservableCollection<TemplateVariableViewModel> TemplateVariables { get; }
-
-        /// <summary>
-        /// 是否正在加载
-        /// </summary>
-        public bool IsLoading
-        {
-            get => _isLoading;
-            private set
-            {
-                if (SetProperty(ref _isLoading, value))
-                {
-                    // 刷新命令可用状态
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
-        }
-
-        /// <summary>
-        /// 是否正在保存
-        /// </summary>
-        public bool IsSaving
-        {
-            get => _isSaving;
-            private set
-            {
-                if (SetProperty(ref _isSaving, value))
-                {
-                    // 刷新命令可用状态
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
-        }
-
-        /// <summary>
-        /// 状态消息
-        /// </summary>
         public string StatusMessage
         {
             get => _statusMessage;
             set => SetProperty(ref _statusMessage, value);
         }
 
-        /// <summary>
-        /// 错误消息
-        /// </summary>
+        private string _errorMessage;
         public string ErrorMessage
         {
             get => _errorMessage;
             set => SetProperty(ref _errorMessage, value);
         }
 
-        /// <summary>
-        /// 当前模板类型
-        /// </summary>
-        public TemplateType CurrentTemplateType
+        private bool _isLoading;
+        public bool IsLoading
         {
-            get => _currentTemplateType;
-            set
-            {
-                if (SetProperty(ref _currentTemplateType, value))
-                {
-                    _logger.LogDebug("模板类型已更改为: {TemplateType}", value);
-                    _ = LoadTemplatesAsync();
-                }
-            }
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
+        private bool _hasUnsavedChanges;
+        public bool HasUnsavedChanges
+        {
+            get => _hasUnsavedChanges;
+            set => SetProperty(ref _hasUnsavedChanges, value);
+        }
+
+        private bool _hasContent;
+        public bool HasContent
+        {
+            get => _hasContent;
+            set => SetProperty(ref _hasContent, value);
+        }
+
+        private bool _hasPreviewContent;
+        public bool HasPreviewContent
+        {
+            get => _hasPreviewContent;
+            set => SetProperty(ref _hasPreviewContent, value);
+        }
+
+        private bool _hasUserSettingsChanged;
+        public bool HasUserSettingsChanged
+        {
+            get => _hasUserSettingsChanged;
+            set => SetProperty(ref _hasUserSettingsChanged, value);
+        }
+
+        // Project properties
+        private string _currentProjectPath;
+        public string CurrentProjectPath
+        {
+            get => _currentProjectPath;
+            set => SetProperty(ref _currentProjectPath, value);
+        }
+
+        private string _lastProjectPath;
+        public string LastProjectPath
+        {
+            get => _lastProjectPath;
+            set => SetProperty(ref _lastProjectPath, value);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="logger">日志服务</param>
+        public MainViewModel()
+        {
+            _logger = LoggerExtensions.GetLogger<MainViewModel>();
+            _logger.LogInformation("MainViewModel 已创建");
         }
 
         /// <summary>
-        /// 选中的模板
+        /// 初始化视图模型
         /// </summary>
-        public Template SelectedTemplate
+        public void Initialize()
         {
-            get => _selectedTemplate;
-            set
+            using ("Method".LogContext("Initialize"))
             {
-                if (SetProperty(ref _selectedTemplate, value))
-                {
-                    _logger.LogDebug("已选择模板: {TemplateName}", value?.Name ?? "无");
-                    _ = LoadSelectedTemplateAsync();
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
-        }
-
-        /// <summary>
-        /// 预览内容
-        /// </summary>
-        public string PreviewContent
-        {
-            get => _previewContent;
-            set => SetProperty(ref _previewContent, value);
-        }
-
-        /// <summary>
-        /// 加载模板命令
-        /// </summary>
-        public ICommand LoadTemplatesCommand { get; }
-
-        /// <summary>
-        /// 新建模板命令
-        /// </summary>
-        public ICommand NewTemplateCommand { get; }
-
-        /// <summary>
-        /// 保存模板命令
-        /// </summary>
-        public ICommand SaveTemplateCommand { get; }
-
-        /// <summary>
-        /// 删除模板命令
-        /// </summary>
-        public ICommand DeleteTemplateCommand { get; }
-
-        /// <summary>
-        /// 导出图片命令
-        /// </summary>
-        public ICommand ExportImageCommand { get; }
-
-        /// <summary>
-        /// 加载指定类型的所有模板
-        /// </summary>
-        private async Task LoadTemplatesAsync()
-        {
-            if (IsLoading) return;
-
-            try
-            {
-                IsLoading = true;
-                StatusMessage = $"正在加载{CurrentTemplateType}模板...";
-                ErrorMessage = string.Empty;
+                _logger.LogInformation("正在初始化视图模型");
                 
-                _logger.LogInformation("开始加载{TemplateType}类型的模板", CurrentTemplateType);
-
-                Templates.Clear();
-                var templates = await _templateService.GetTemplatesByTypeAsync(CurrentTemplateType);
-                
-                foreach (var template in templates)
+                try
                 {
-                    Templates.Add(template);
-                }
-
-                StatusMessage = $"已加载 {Templates.Count} 个{CurrentTemplateType}模板";
-                _logger.LogInformation("成功加载 {Count} 个{TemplateType}模板", Templates.Count, CurrentTemplateType);
-
-                // 如果没有选中模板但有可用模板，则选中第一个
-                if (SelectedTemplate == null && Templates.Count > 0)
-                {
-                    // 首先尝试选择默认模板
-                    SelectedTemplate = Templates.FirstOrDefault(t => t.IsDefault) ?? Templates.First();
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"加载模板失败: {ex.Message}";
-                _logger.LogError(ex, "加载{TemplateType}类型的模板失败", CurrentTemplateType);
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        /// <summary>
-        /// 加载选中的模板
-        /// </summary>
-        private async Task LoadSelectedTemplateAsync()
-        {
-            if (SelectedTemplate == null)
-            {
-                PreviewContent = string.Empty;
-                TemplateVariables.Clear();
-                return;
-            }
-
-            try
-            {
-                IsLoading = true;
-                StatusMessage = $"正在加载模板: {SelectedTemplate.Name}...";
-                ErrorMessage = string.Empty;
-                
-                _logger.LogDebug("开始加载模板内容: {TemplateName}", SelectedTemplate.Name);
-
-                // 加载模板内容
-                if (string.IsNullOrEmpty(SelectedTemplate.Content))
-                {
-                    var template = await _templateService.LoadTemplateContentAsync(SelectedTemplate);
-                    SelectedTemplate.Content = template.Content;
-                    SelectedTemplate.Variables = template.Variables;
+                    IsLoading = true;
                     
-                    _logger.LogDebug("已加载模板内容, 内容长度: {Length} 字符", SelectedTemplate.Content?.Length ?? 0);
+                    // 初始化默认值
+                    HasUnsavedChanges = false;
+                    HasContent = false;
+                    HasPreviewContent = false;
+                    HasUserSettingsChanged = false;
+                    
+                    StatusMessage = "就绪";
+                    
+                    _logger.LogInformation("视图模型初始化完成");
                 }
-
-                // 更新预览
-                PreviewContent = SelectedTemplate.Content;
-
-                // 更新变量列表
-                UpdateTemplateVariables();
-
-                StatusMessage = $"已加载模板: {SelectedTemplate.Name}";
-                _logger.LogInformation("成功加载模板: {TemplateName}", SelectedTemplate.Name);
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"加载模板内容失败: {ex.Message}";
-                _logger.LogError(ex, "加载模板内容失败: {TemplateName}", SelectedTemplate?.Name);
-            }
-            finally
-            {
-                IsLoading = false;
-            }
-        }
-
-        /// <summary>
-        /// 更新模板变量
-        /// </summary>
-        private void UpdateTemplateVariables()
-        {
-            TemplateVariables.Clear();
-
-            if (SelectedTemplate?.Variables == null) return;
-
-            foreach (var variable in SelectedTemplate.Variables)
-            {
-                TemplateVariables.Add(new TemplateVariableViewModel(variable));
-            }
-            
-            _logger.LogDebug("已更新 {Count} 个模板变量", TemplateVariables.Count);
-        }
-
-        /// <summary>
-        /// 创建新模板
-        /// </summary>
-        private void CreateNewTemplate()
-        {
-            var newTemplate = new Template
-            {
-                Id = Guid.NewGuid(),
-                Name = "新建模板",
-                DisplayName = "新建模板",
-                Description = "这是一个新建的模板",
-                Type = CurrentTemplateType,
-                CreatedAt = DateTime.Now,
-                ModifiedAt = DateTime.Now,
-                Content = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"750\" height=\"1334\"><rect width=\"100%\" height=\"100%\" fill=\"#f0f0f0\"/><text x=\"50%\" y=\"50%\" font-size=\"24\" text-anchor=\"middle\">{{text}}</text></svg>",
-                Variables = new System.Collections.Generic.List<TemplateVariable>
+                catch (Exception ex)
                 {
-                    new TemplateVariable
-                    {
-                        Name = "text",
-                        DisplayName = "文本内容",
-                        Description = "显示的文本内容",
-                        Type = VariableType.Text,
-                        DefaultValue = "Hello World"
-                    }
+                    _logger.LogError(ex, "视图模型初始化失败");
+                    ErrorMessage = "初始化失败";
                 }
-            };
-
-            Templates.Add(newTemplate);
-            SelectedTemplate = newTemplate;
-            
-            _logger.LogInformation("已创建新模板: {TemplateId}", newTemplate.Id);
-        }
-
-        /// <summary>
-        /// 保存模板
-        /// </summary>
-        private async Task SaveTemplateAsync()
-        {
-            if (SelectedTemplate == null || IsSaving) return;
-
-            try
-            {
-                IsSaving = true;
-                StatusMessage = $"正在保存模板: {SelectedTemplate.Name}...";
-                ErrorMessage = string.Empty;
-                
-                _logger.LogInformation("开始保存模板: {TemplateName}", SelectedTemplate.Name);
-
-                // 更新修改时间
-                SelectedTemplate.ModifiedAt = DateTime.Now;
-
-                // 保存模板
-                var savedTemplate = await _templateService.SaveTemplateAsync(SelectedTemplate);
-                
-                // 更新模板引用
-                var index = Templates.IndexOf(SelectedTemplate);
-                if (index >= 0)
+                finally
                 {
-                    Templates[index] = savedTemplate;
-                    SelectedTemplate = savedTemplate;
+                    IsLoading = false;
                 }
-
-                StatusMessage = $"已保存模板: {SelectedTemplate.Name}";
-                _logger.LogInformation("成功保存模板: {TemplateName}", SelectedTemplate.Name);
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"保存模板失败: {ex.Message}";
-                _logger.LogError(ex, "保存模板失败: {TemplateName}", SelectedTemplate?.Name);
-            }
-            finally
-            {
-                IsSaving = false;
             }
         }
 
         /// <summary>
-        /// 删除模板
+        /// 清理资源
         /// </summary>
-        private async Task DeleteTemplateAsync()
+        public void Cleanup()
         {
-            if (SelectedTemplate == null || IsSaving || SelectedTemplate.IsDefault) return;
-
-            try
+            using ("Method".LogContext("Cleanup"))
             {
-                IsSaving = true;
-                StatusMessage = $"正在删除模板: {SelectedTemplate.Name}...";
-                ErrorMessage = string.Empty;
+                _logger.LogInformation("正在清理视图模型资源");
                 
-                _logger.LogWarning("开始删除模板: {TemplateName} ({TemplateId})", 
-                    SelectedTemplate.Name, SelectedTemplate.Id);
-
-                // 确认框
-                var result = System.Windows.MessageBox.Show(
-                    $"确定要删除模板 \"{SelectedTemplate.Name}\" 吗？此操作不可恢复。",
-                    "确认删除",
-                    System.Windows.MessageBoxButton.YesNo,
-                    System.Windows.MessageBoxImage.Warning);
-
-                if (result != System.Windows.MessageBoxResult.Yes)
+                try
                 {
-                    _logger.LogInformation("用户取消了删除模板操作");
-                    StatusMessage = "已取消删除操作";
+                    // 清理资源和保存状态
+                    _logger.LogInformation("视图模型资源清理完成");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "清理视图模型资源失败");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 创建新项目
+        /// </summary>
+        public void CreateNewProject()
+        {
+            using ("Method".LogContext("CreateNewProject"))
+            {
+                _logger.LogInformation("创建新项目");
+                
+                try
+                {
+                    IsLoading = true;
+                    
+                    // 重置项目状态
+                    CurrentProjectPath = null;
+                    HasUnsavedChanges = false;
+                    HasContent = true;
+                    HasPreviewContent = false;
+                    
+                    // 执行创建新���目的逻辑
+                    
+                    _logger.LogInformation("新项目创建成功");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "创建新项目失败");
+                    ErrorMessage = $"创建新项目失��: {ex.Message}";
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 打开项目
+        /// </summary>
+        /// <param name="path">项目路径</param>
+        public void OpenProject(string path)
+        {
+            using ("Method".LogContext("OpenProject"))
+            {
+                _logger.LogInformation("正在打开项目: {Path}", path);
+                
+                if (string.IsNullOrEmpty(path))
+                {
+                    _logger.LogWarning("项目路径为空");
                     return;
                 }
-
-                // 删除模板
-                var templateToDelete = SelectedTemplate;
-                SelectedTemplate = null; // 先清空选择，避免引用已删除对象
                 
-                bool deleted = await _templateService.DeleteTemplateAsync(templateToDelete.Id);
-
-                if (deleted)
+                try
                 {
-                    Templates.Remove(templateToDelete);
-                    StatusMessage = $"已删除模板: {templateToDelete.Name}";
-                    _logger.LogInformation("成功删除模板: {TemplateName} ({TemplateId})", 
-                        templateToDelete.Name, templateToDelete.Id);
+                    IsLoading = true;
                     
-                    // 如果还有其他模板，选择第一个
-                    if (Templates.Count > 0)
+                    if (!File.Exists(path))
                     {
-                        SelectedTemplate = Templates[0];
+                        _logger.LogWarning("项目文件不存在: {Path}", path);
+                        ErrorMessage = "项目文件不存在";
+                        return;
                     }
+                    
+                    // 加载项目文件
+                    // ...
+                    
+                    CurrentProjectPath = path;
+                    LastProjectPath = path;
+                    HasUnsavedChanges = false;
+                    HasContent = true;
+                    HasPreviewContent = true;
+                    
+                    _logger.LogInformation("项目打开成功: {Path}", path);
                 }
-                else
+                catch (Exception ex)
                 {
-                    ErrorMessage = "删除模板失败";
-                    _logger.LogError("删除模板失败: {TemplateName} ({TemplateId})", 
-                        templateToDelete.Name, templateToDelete.Id);
+                    _logger.LogError(ex, "打开项目失败: {Path}", path);
+                    ErrorMessage = $"打开项目失败: {ex.Message}";
                 }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"删除模板失败: {ex.Message}";
-                _logger.LogError(ex, "删除模板时发生异常: {TemplateName}", SelectedTemplate?.Name);
-            }
-            finally
-            {
-                IsSaving = false;
+                finally
+                {
+                    IsLoading = false;
+                }
             }
         }
 
         /// <summary>
-        /// 导出图片
+        /// 保存项目
         /// </summary>
-        private async Task ExportImageAsync()
+        public void SaveProject()
         {
-            if (string.IsNullOrEmpty(PreviewContent) || IsLoading) return;
-
-            try
+            using ("Method".LogContext("SaveProject"))
             {
-                IsLoading = true;
-                StatusMessage = "正在导出图片...";
-                ErrorMessage = string.Empty;
+                _logger.LogInformation("正在保存项目");
                 
-                _logger.LogInformation("开始导出模板为图片: {TemplateName}", SelectedTemplate?.Name);
-
-                // 这里实现导出图片的逻辑
-                // 实际应用中可能需要调用外部库将SVG转换为图片
-
-                await Task.Delay(500); // 模拟处理时间
-
-                StatusMessage = "图片导出成功";
-                _logger.LogInformation("成功导出模板为图片");
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"导出图片失败: {ex.Message}";
-                _logger.LogError(ex, "导出图片失败");
-            }
-            finally
-            {
-                IsLoading = false;
+                if (string.IsNullOrEmpty(CurrentProjectPath))
+                {
+                    _logger.LogWarning("当前项目路径为空，无法保存");
+                    return;
+                }
+                
+                try
+                {
+                    IsLoading = true;
+                    
+                    // 保存项目文件
+                    // ...
+                    
+                    HasUnsavedChanges = false;
+                    _logger.LogInformation("项目已保存: {Path}", CurrentProjectPath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "保存项目失败: {Path}", CurrentProjectPath);
+                    ErrorMessage = $"保存项目失败: {ex.Message}";
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
             }
         }
 
         /// <summary>
-        /// 预览更新后的模板内容
+        /// 项目另存为
         /// </summary>
-        public void UpdatePreview()
+        /// <param name="path">保存路径</param>
+        public void SaveProjectAs(string path)
         {
-            if (SelectedTemplate == null) return;
-            
-            try
+            using ("Method".LogContext("SaveProjectAs"))
             {
-                _logger.LogDebug("更新模板预览");
+                _logger.LogInformation("正在将项目另存为: {Path}", path);
                 
-                // 收集变量值
-                var variableValues = new System.Collections.Generic.Dictionary<string, object>();
-                
-                foreach (var variableVm in TemplateVariables)
+                if (string.IsNullOrEmpty(path))
                 {
-                    variableValues[variableVm.Name] = variableVm.Value;
+                    _logger.LogWarning("保存路径为空");
+                    return;
                 }
                 
-                // 应用变量到模板内容
-                var updatedContent = _templateService.ApplyVariables(SelectedTemplate, variableValues);
-                PreviewContent = updatedContent;
-                
-                _logger.LogDebug("模板预览已更新，内容长度: {Length} 字符", PreviewContent?.Length ?? 0);
+                try
+                {
+                    IsLoading = true;
+                    
+                    // 执行保存逻辑
+                    // ...
+                    
+                    CurrentProjectPath = path;
+                    LastProjectPath = path;
+                    HasUnsavedChanges = false;
+                    
+                    _logger.LogInformation("项目已另存为: {Path}", path);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "项目另存为失败: {Path}", path);
+                    ErrorMessage = $"保存失败: {ex.Message}";
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
             }
-            catch (Exception ex)
+        }
+
+        /// <summary>
+        /// 保存用户设置
+        /// </summary>
+        public void SaveUserSettings()
+        {
+            using ("Method".LogContext("SaveUserSettings"))
             {
-                ErrorMessage = $"更新预览失败: {ex.Message}";
-                _logger.LogError(ex, "更新模板预览失败");
+                _logger.LogInformation("正在保存用户设置");
+                
+                try
+                {
+                    IsLoading = true;
+                    
+                    // 保存用户设��逻辑
+                    // ...
+                    
+                    HasUserSettingsChanged = false;
+                    
+                    _logger.LogInformation("用户设置已保存");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "保存用户设置失败");
+                    ErrorMessage = $"保存用户设置失败: {ex.Message}";
+                }
+                finally
+                {
+                    IsLoading = false;
+                }
             }
         }
     }
-
-    
 }

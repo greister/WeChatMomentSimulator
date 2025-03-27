@@ -2,9 +2,9 @@
 
 namespace WeChatMomentSimulator.Desktop.Views;
 
-public partial class MenuBarView : UserControl
+public partial class UserSettingsView : UserControl
 {
-    public MenuBarView()
+    public UserSettingsView()
     {
         InitializeComponent();
     }

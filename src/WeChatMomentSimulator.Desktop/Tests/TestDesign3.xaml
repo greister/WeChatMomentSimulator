@@ -1,0 +1,130 @@
+﻿<Window x:Class="WeChatMomentSimulator.Desktop.TestDesign3"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WeChatMomentSimulator.Desktop"
+        mc:Ignorable="d"
+        Title="样式测试页面"
+        Height="600" Width="800"
+        Background="{StaticResource BackgroundBrush}">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- 顶部区域 -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanelStyle}" Margin="0,0,0,15">
+            <DockPanel>
+                <Border Style="{StaticResource TopNavBarStyle}" DockPanel.Dock="Top">
+                    <TextBlock Text="样式测试区域" Style="{StaticResource SubtitleStyle}" Margin="10,5"/>
+                </Border>
+                
+                <StackPanel Margin="10">
+                    <TextBlock Text="这是一个用于测试样式的页面" Margin="0,5"/>
+                    <TextBlock Text="所有样式都引用自现有资源字典" Margin="0,5"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+        
+        <!-- 中间内容区域 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- 左侧区域 -->
+            <Border Grid.Column="0" Style="{StaticResource CardPanelStyle}" Margin="0,0,7.5,0">
+                <DockPanel>
+                    <Border Style="{StaticResource TopNavBarStyle}" DockPanel.Dock="Top">
+                        <TextBlock Text="组件测试" Style="{StaticResource SubtitleStyle}" Margin="10,5"/>
+                    </Border>
+                    
+                    <ScrollViewer Padding="10">
+                        <StackPanel>
+                            <GroupBox Header="按钮样式" Style="{StaticResource GroupBoxStyle}">
+                                <StackPanel Margin="0,10">
+                                    <Button Content="基础按钮" Style="{StaticResource BaseButtonStyle}" Margin="0,5"/>
+                                    <Button Content="主要按钮" Style="{StaticResource PrimaryButtonStyle}" Margin="0,5"/>
+                                </StackPanel>
+                            </GroupBox>
+                            
+                            <GroupBox Header="表单元素" Style="{StaticResource GroupBoxStyle}" Margin="0,10,0,0">
+                                <Grid Margin="0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    
+                                    <TextBlock Text="文本输入:" Grid.Row="0" Grid.Column="0" Margin="0,5,10,5"/>
+                                    <TextBox Grid.Row="0" Grid.Column="1" Margin="0,5"/>
+                                    
+                                    <TextBlock Text="选择项:" Grid.Row="1" Grid.Column="0" Margin="0,5,10,5"/>
+                                    <ComboBox Grid.Row="1" Grid.Column="1" Margin="0,5">
+                                        <ComboBoxItem Content="选项 1"/>
+                                        <ComboBoxItem Content="选项 2"/>
+                                        <ComboBoxItem Content="选项 3"/>
+                                    </ComboBox>
+                                    
+                                    <TextBlock Text="开关选项:" Grid.Row="2" Grid.Column="0" Margin="0,5,10,5"/>
+                                    <CheckBox Content="启用功能" Grid.Row="2" Grid.Column="1" Margin="0,5"/>
+                                </Grid>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+            
+            <!-- 右侧区域 -->
+            <Border Grid.Column="1" Style="{StaticResource CardPanelStyle}" Margin="7.5,0,0,0">
+                <DockPanel>
+                    <Border Style="{StaticResource TopNavBarStyle}" DockPanel.Dock="Top">
+                        <TextBlock Text="布局测试" Style="{StaticResource SubtitleStyle}" Margin="10,5"/>
+                    </Border>
+                    
+                    <Grid Margin="10">
+                        <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8">
+                            <StackPanel Margin="15">
+                                <TextBlock Text="边框与圆角测试" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                                
+                                <Border Background="{StaticResource SurfaceBrush}" 
+                                        BorderBrush="{StaticResource DividerBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="4"
+                                        Padding="10"
+                                        Margin="0,5">
+                                    <TextBlock Text="这是一个带边框和背景的区域"/>
+                                </Border>
+                                
+                                <Border Background="{StaticResource BackgroundBrush}" 
+                                        Margin="0,10"
+                                        Padding="10">
+                                    <TextBlock Text="所有样式和颜色都来自预定义的资源"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </DockPanel>
+            </Border>
+        </Grid>
+        
+        <!-- 底部区域 -->
+        <Border Grid.Row="2" Style="{StaticResource CardPanelStyle}" Margin="0,15,0,0">
+            <Grid Margin="10">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="取消" Style="{StaticResource BaseButtonStyle}" Padding="15,5" Margin="0,0,10,0"/>
+                    <Button Content="确定" Style="{StaticResource PrimaryButtonStyle}" Padding="15,5" Margin="10,0,0,0"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

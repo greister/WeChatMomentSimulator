@@ -1,0 +1,55 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <!-- 主题颜色 -->
+    <Color x:Key="PrimaryColor">#07C160</Color>
+    <Color x:Key="PrimaryLightColor">#06AD56</Color>
+    <Color x:Key="PrimaryDarkColor">#059B4C</Color>
+    
+    <Color x:Key="SecondaryColor">#576B95</Color>
+    <Color x:Key="SecondaryLightColor">#6D80A8</Color>
+    <Color x:Key="SecondaryDarkColor">#415780</Color>
+    
+    <!-- 中性色 -->
+    <Color x:Key="BackgroundColor">#F7F7F7</Color>
+    <Color x:Key="SurfaceColor">#FFFFFF</Color>
+    <Color x:Key="BorderColor">#DDDDDD</Color>
+    <Color x:Key="DividerColor">#EEEEEE</Color>
+    
+    <!-- 文本颜色 -->
+    <Color x:Key="TextPrimaryColor">#333333</Color>
+    <Color x:Key="TextSecondaryColor">#666666</Color>
+    <Color x:Key="TextHintColor">#999999</Color>
+    
+    <!-- 状态颜色 -->
+    <Color x:Key="SuccessColor">#07C160</Color>
+    <Color x:Key="WarningColor">#FFC300</Color>
+    <Color x:Key="ErrorColor">#FF4444</Color>
+    <Color x:Key="InfoColor">#10AEFF</Color>
+    
+    <!-- 背景画笔 -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
+    <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLightColor}"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDarkColor}"/>
+    
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColor}"/>
+    <SolidColorBrush x:Key="SecondaryLightBrush" Color="{StaticResource SecondaryLightColor}"/>
+    <SolidColorBrush x:Key="SecondaryDarkBrush" Color="{StaticResource SecondaryDarkColor}"/>
+    
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}"/>
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource DividerColor}"/>
+    
+    <!-- 文本画笔 -->
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}"/>
+    <SolidColorBrush x:Key="TextHintBrush" Color="{StaticResource TextHintColor}"/>
+    
+    <!-- 状态画笔 -->
+    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}"/>
+    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}"/>
+    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>
+    <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource InfoColor}"/>
+    
+</ResourceDictionary>

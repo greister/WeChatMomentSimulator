@@ -10,9 +10,11 @@ using Serilog;
 using WeChatMomentSimulator.Core.Interfaces.Repositories;
 using WeChatMomentSimulator.Core.Interfaces.Services;
 using WeChatMomentSimulator.Core.Logging;
+using WeChatMomentSimulator.Desktop.Services;
 using WeChatMomentSimulator.Services.Repositories;
 using WeChatMomentSimulator.Services.Services;
 using WeChatMomentSimulator.Desktop.ViewModels;
+using WeChatMomentSimulator.Desktop.Views;
 
 namespace WeChatMomentSimulator.Desktop
 {
@@ -71,9 +73,14 @@ namespace WeChatMomentSimulator.Desktop
                     
                     // 注册应用服务
                     services.AddSingleton<ITemplateService, TemplateService>();
+                    // In ConfigureServices method
+                    services.AddSingleton<IDialogService, DialogService>();
+                    // In ConfigureServices method
+                    services.AddSingleton<ISettingsService, SettingsService>();
                     
                     // 注册视图模型
                     services.AddSingleton<MainViewModel>();
+                    
                     
                     // 注册主窗口
                     services.AddSingleton<MainWindow>();

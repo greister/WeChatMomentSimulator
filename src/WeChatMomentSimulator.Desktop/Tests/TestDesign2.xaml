@@ -1,0 +1,220 @@
+﻿<Window x:Class="WeChatMomentSimulator.Desktop.TestDesign2"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WeChatMomentSimulator.Desktop"
+        mc:Ignorable="d"
+        Title="样式测试页面"
+        Height="650" Width="900"
+        Background="{StaticResource BackgroundBrush}">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部区域 -->
+        <Border Grid.Row="0" Style="{StaticResource CardPanelStyle}" Margin="0,0,0,15">
+            <DockPanel>
+                <Border Style="{StaticResource TopNavBarStyle}" DockPanel.Dock="Top">
+                    <Grid>
+                        <TextBlock Text="Style Gallery" Style="{StaticResource TitleStyle}" Margin="10,8"/>
+                        <TextBlock Text="设计语言展示" Style="{StaticResource SubtitleStyle}" HorizontalAlignment="Right" Margin="10,8"/>
+                    </Grid>
+                </Border>
+
+                <StackPanel Margin="15">
+                    <TextBlock Text="UI 组件样式库" Style="{StaticResource SectionTitle}" Foreground="{StaticResource PrimaryBrush}"/>
+                    <TextBlock Text="这个页面展示了应用中所有预定义的样式和组件，确保设计统一性。" Style="{StaticResource BodyTextStyle}" TextWrapping="Wrap"/>
+                    
+                    <Separator Style="{StaticResource SeparatorStyle}" Margin="0,10"/>
+                    
+                    <WrapPanel Margin="0,5">
+                        <Border Style="{StaticResource TagStyle}" Margin="0,0,5,0">
+                            <TextBlock Text="组件展示" Foreground="{StaticResource SurfaceBrush}"/>
+                        </Border>
+                        <Border Style="{StaticResource TagStyle}" Background="{StaticResource SecondaryBrush}">
+                            <TextBlock Text="设计规范" Foreground="{StaticResource SurfaceBrush}"/>
+                        </Border>
+                    </WrapPanel>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- 中间内容区域 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧区域 -->
+            <Border Grid.Column="0" Style="{StaticResource CardPanelStyle}" Margin="0,0,7.5,0">
+                <DockPanel>
+                    <Border Style="{StaticResource TopNavBarStyle}" DockPanel.Dock="Top">
+                        <StackPanel Orientation="Horizontal" Margin="10,5">
+                            <Ellipse Width="12" Height="12" Fill="{StaticResource AccentBrush}" Margin="0,0,8,0"/>
+                            <TextBlock Text="交互组件" Style="{StaticResource SubtitleStyle}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ScrollViewer>
+                        <StackPanel Margin="15">
+                            <GroupBox Header="按钮集合" Style="{StaticResource GroupBoxStyle}">
+                                <UniformGrid Columns="2" Margin="0,10">
+                                    <Button Content="主按钮" Style="{StaticResource PrimaryButtonStyle}" Margin="5"/>
+                                    <Button Content="次级按钮" Style="{StaticResource SecondaryButtonStyle}" Margin="5"/>
+                                    <Button Content="基础按钮" Style="{StaticResource BaseButtonStyle}" Margin="5"/>
+                                    <Button Content="扁平按钮" Style="{StaticResource FlatButton}" Margin="5"/>
+                                </UniformGrid>
+                            </GroupBox>
+
+                            <GroupBox Header="表单控件" Style="{StaticResource GroupBoxStyle}" Margin="0,15,0,0">
+                                <Grid Margin="0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Text="文本输入:" Grid.Row="0" Grid.Column="0" Style="{StaticResource LabelStyle}" Margin="0,8,10,8"/>
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="示例文本" Style="{StaticResource TextInputStyle}" Margin="0,5"/>
+
+                                    <TextBlock Text="下拉选择:" Grid.Row="1" Grid.Column="0" Style="{StaticResource LabelStyle}" Margin="0,8,10,8"/>
+                                    <ComboBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ComboBoxStyle}" Margin="0,5" SelectedIndex="0">
+                                        <ComboBoxItem Content="选项 A"/>
+                                        <ComboBoxItem Content="选项 B"/>
+                                        <ComboBoxItem Content="选项 C"/>
+                                    </ComboBox>
+
+                                    <TextBlock Text="开关选择:" Grid.Row="2" Grid.Column="0" Style="{StaticResource LabelStyle}" Margin="0,8,10,8"/>
+                                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+                                        <CheckBox Content="启用" IsChecked="True" Style="{StaticResource CheckBoxStyle}" Margin="0,5,15,5"/>
+                                        <CheckBox Content="禁用" Style="{StaticResource CheckBoxStyle}" Margin="0,5"/>
+                                    </StackPanel>
+
+                                    <TextBlock Text="滑动控制:" Grid.Row="3" Grid.Column="0" Style="{StaticResource LabelStyle}" Margin="0,8,10,0"/>
+                                    <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="100" Value="35" Style="{StaticResource SliderStyle}" Margin="0,5"/>
+                                </Grid>
+                            </GroupBox>
+
+                            <GroupBox Header="进度展示" Style="{StaticResource GroupBoxStyle}" Margin="0,15,0,0">
+                                <StackPanel Margin="0,10">
+                                    <ProgressBar Value="65" Maximum="100" Height="10" Style="{StaticResource ProgressBarStyle}" Margin="0,5"/>
+                                    <Grid Margin="0,10,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <ProgressBar Grid.Column="0" IsIndeterminate="True" Height="6" Style="{StaticResource ProgressBarStyle}"/>
+                                        <TextBlock Grid.Column="1" Text="加载中..." Foreground="{StaticResource SecondaryBrush}" Margin="8,0,0,0"/>
+                                    </Grid>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- 右侧区域 -->
+            <Border Grid.Column="1" Style="{StaticResource CardPanelStyle}" Margin="7.5,0,0,0">
+                <DockPanel>
+                    <Border Style="{StaticResource TopNavBarStyle}" DockPanel.Dock="Top">
+                        <StackPanel Orientation="Horizontal" Margin="10,5">
+                            <Ellipse Width="12" Height="12" Fill="{StaticResource SecondaryBrush}" Margin="0,0,8,0"/>
+                            <TextBlock Text="视觉风格" Style="{StaticResource SubtitleStyle}"/>
+                        </StackPanel>
+                    </Border>
+
+                    <ScrollViewer>
+                        <StackPanel Margin="15">
+                            <GroupBox Header="文本排版" Style="{StaticResource GroupBoxStyle}">
+                                <StackPanel Margin="0,10">
+                                    <TextBlock Text="标题文本样式" Style="{StaticResource TitleStyle}" Foreground="{StaticResource PrimaryBrush}" Margin="0,5"/>
+                                    <TextBlock Text="副标题文本样式" Style="{StaticResource SubtitleStyle}" Foreground="{StaticResource SecondaryBrush}" Margin="0,5"/>
+                                    <TextBlock Text="正文文本样式" Style="{StaticResource BodyTextStyle}" Margin="0,5"/>
+                                    <TextBlock Text="说明文本样式" Style="{StaticResource CaptionTextStyle}" Foreground="{StaticResource SecondaryBrush}" Margin="0,5"/>
+                                </StackPanel>
+                            </GroupBox>
+
+                            <GroupBox Header="卡片与面板" Style="{StaticResource GroupBoxStyle}" Margin="0,15,0,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Border Grid.Column="0" Style="{StaticResource CardStyle}" Margin="0,10,5,10">
+                                        <StackPanel Margin="12">
+                                            <TextBlock Text="基础卡片" Style="{StaticResource CaptionTextStyle}" Foreground="{StaticResource PrimaryBrush}"/>
+                                            <TextBlock Text="标准布局" TextWrapping="Wrap" Margin="0,5,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <Border Grid.Column="1" Background="{StaticResource AccentBrush}" CornerRadius="8" Margin="5,10,0,10">
+                                        <StackPanel Margin="12">
+                                            <TextBlock Text="强调卡片" Style="{StaticResource CaptionTextStyle}" Foreground="{StaticResource SurfaceBrush}"/>
+                                            <TextBlock Text="醒目效果" Foreground="{StaticResource SurfaceBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </GroupBox>
+
+                            <GroupBox Header="分隔与边框" Style="{StaticResource GroupBoxStyle}" Margin="0,15,0,0">
+                                <StackPanel Margin="0,10">
+                                    <Border BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10">
+                                        <TextBlock Text="标准边框" Style="{StaticResource BodyTextStyle}"/>
+                                    </Border>
+                                    
+                                    <Separator Style="{StaticResource SeparatorStyle}" Margin="0,12"/>
+                                    
+                                    <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="0,0,0,2" Padding="0,0,0,8">
+                                        <TextBlock Text="底部强调" Style="{StaticResource BodyTextStyle}" Foreground="{StaticResource PrimaryBrush}"/>
+                                    </Border>
+                                    
+                                    <Grid Margin="0,12,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Separator Style="{StaticResource SeparatorStyle}" Grid.Column="0"/>
+                                        <TextBlock Grid.Column="1" Text="文本分隔" Margin="10,0" Foreground="{StaticResource SecondaryBrush}"/>
+                                        <Separator Style="{StaticResource SeparatorStyle}" Grid.Column="2"/>
+                                    </Grid>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- 底部区域 -->
+        <Border Grid.Row="2" Style="{StaticResource CardPanelStyle}" Margin="0,15,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" Text="样式库版本 1.0" Style="{StaticResource CaptionTextStyle}" 
+                           Foreground="{StaticResource SecondaryBrush}" Margin="15,12"/>
+                
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="15,12">
+                    <Button Content="取消" Style="{StaticResource BaseButtonStyle}" MinWidth="80" Margin="0,0,10,0"/>
+                    <Button Content="确定" Style="{StaticResource PrimaryButtonStyle}" MinWidth="80"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
