@@ -61,7 +61,7 @@ namespace WeChatMomentSimulator.Core.Models.Template
         /// <summary>
         /// 获取或设置是否为默认模板
         /// </summary>
-        public bool IsDefault { get; set; }
+        public bool IsBuiltIn { get; set; }
 
         /// <summary>
         /// 获取或设置模板变量集合

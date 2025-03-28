@@ -1,13 +1,8 @@
-﻿using System;
+﻿
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using WeChatMomentSimulator.Core.Logging;
-using WeChatMomentSimulator.Desktop.Commands;
-using WeChatMomentSimulator.Desktop.ViewModels;
-using WeChatMomentSimulator.Desktop.Views.Controls;
-using LoggerExtensions = WeChatMomentSimulator.Core.Logging.LoggerExtensions;
 
 namespace WeChatMomentSimulator.Desktop.Views;
 
@@ -18,13 +13,31 @@ public partial class MenuBarView : UserControl
     // 依赖注入服务提供者
     private readonly IServiceProvider _serviceProvider;
     
+    
+    // public MenuBarView(IServiceProvider serviceProvider)
+    // {
+    //     InitializeComponent();
+    //     _serviceProvider = serviceProvider;
+    //     _logger.Information("菜单栏视图已初始化");
+    //     // 初始化命令
+    //     
+    //     
+    // }
+    
     public MenuBarView()
     {
         InitializeComponent();
-        _logger.Information("菜单栏视图已初始化");
-        // 初始化命令
-        
-        
+        _logger.Information("菜单栏视图已使用默认构造函数初始化");
+    
+        // 尝试从应用程序获取服务提供者
+        try 
+        {
+            _serviceProvider = ((App)Application.Current)._host?.Services;
+        }
+        catch (Exception ex)
+        {
+            _logger.Warning(ex, "无法从应用程序获取服务提供者");
+        }
     }
 
     private void OpenSvgEditor_Click(object sender, RoutedEventArgs e)
@@ -32,12 +45,12 @@ public partial class MenuBarView : UserControl
         _logger.Information("用户点击了SVG模板编辑器按钮");
         try
         {
-            var editor = new SvgTemplateEditor();
-            _logger.Debug("已创建SVG模板编辑器实例");
-            
-            editor.Owner = Application.Current.MainWindow;
-            editor.ShowDialog();
-            _logger.Information("SVG模板编辑器已关闭");
+            // //var editor = new SvgTemplateEditor();
+            // _logger.Debug("已创建SVG模板编辑器实例");
+            //
+            // editor.Owner = Application.Current.MainWindow;
+            // editor.ShowDialog();
+            // _logger.Information("SVG模板编辑器已关闭");
         }
         catch (Exception ex)
         {
@@ -69,8 +82,9 @@ public partial class MenuBarView : UserControl
         _logger.Information("用户点击了SVG模板编辑器窗口按钮");
         try
         {
+            // var editorWindow = _serviceProvider.GetService<SvgTemplateEditorWindow>();
+            var editorWindow = _serviceProvider.GetRequiredService<SvgTemplateEditorWindow>();;
             
-            var editorWindow = _serviceProvider.GetService<SvgTemplateEditorWindow>();
             _logger.Debug("已创建SVG模板编辑器窗口实例");
         
             editorWindow.Owner = Application.Current.MainWindow;

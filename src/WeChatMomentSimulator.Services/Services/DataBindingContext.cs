@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using WeChatMomentSimulator.Core.DataBinding;
 using WeChatMomentSimulator.Core.Interfaces;
 using WeChatMomentSimulator.Core.Models.Template;
+using LoggerExtensions = WeChatMomentSimulator.Core.Logging.LoggerExtensions;
 
 namespace WeChatMomentSimulator.Services.DataBinding
 {
@@ -41,12 +42,11 @@ namespace WeChatMomentSimulator.Services.DataBinding
         /// </summary>
         public DataBindingContext(
             IDataProvider dataProvider,
-            IPlaceholderParser placeholderParser,
-            ILogger<DataBindingContext> logger)
+            IPlaceholderParser placeholderParser)
         {
             _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
             _placeholderParser = placeholderParser ?? throw new ArgumentNullException(nameof(placeholderParser));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = LoggerExtensions.GetLogger<DataBindingContext>();
             
             // 监听数据提供者的数据变化
             _dataProvider.DataChanged += OnDataProviderChanged;

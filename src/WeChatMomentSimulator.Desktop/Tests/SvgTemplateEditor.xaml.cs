@@ -11,9 +11,11 @@ using Microsoft.Win32;
 using ICSharpCode.AvalonEdit.Highlighting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using WeChatMomentSimulator.Core.Interfaces;
 using WeChatMomentSimulator.Core.Interfaces.Services;
 using WeChatMomentSimulator.Core.Models.Template;
 using WeChatMomentSimulator.Desktop.Rendering;
+using WeChatMomentSimulator.Services.Rendering;
 using WeChatMomentSimulator.Services.Services;
 using ILogger = Serilog.ILogger;
 using LoggerExtensions = WeChatMomentSimulator.Core.Logging.LoggerExtensions;
@@ -26,7 +28,7 @@ namespace WeChatMomentSimulator.Desktop.Views
     public partial class SvgTemplateEditor : Window
     {
         private readonly ITemplateManager _templateManager;
-        private readonly SvgRenderer _svgRenderer;
+        private readonly ISvgCustomRenderer _svgRenderer;
         private Dictionary<string, object> _placeholderData;
         private System.Windows.Threading.DispatcherTimer _refreshTimer;
         private bool _autoRefresh = false;

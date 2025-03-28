@@ -122,7 +122,7 @@ namespace WeChatMomentSimulator.Services.Repositories
                     Description = "默认的朋友圈模板",
                     Type = TemplateType.Moment,
                     Path = Path.Combine(_templateDirectory, "default_moment.svg"),
-                    IsDefault = true,
+                    IsBuiltIn = true,
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now
                 };
@@ -136,7 +136,7 @@ namespace WeChatMomentSimulator.Services.Repositories
                     Description = "默认的聊天模板",
                     Type = TemplateType.Chat,
                     Path = Path.Combine(_templateDirectory, "default_chat.svg"),
-                    IsDefault = true,
+                    IsBuiltIn = true,
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now
                 };
@@ -150,7 +150,7 @@ namespace WeChatMomentSimulator.Services.Repositories
                     Description = "默认的个人资料模板",
                     Type = TemplateType.Profile,
                     Path = Path.Combine(_templateDirectory, "default_profile.svg"),
-                    IsDefault = true,
+                    IsBuiltIn = true,
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now
                 };

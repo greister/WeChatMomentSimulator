@@ -10,6 +10,8 @@ namespace WeChatMomentSimulator.Desktop.Views.Controls
     /// </summary>
     public sealed class AvalonEditBehavior : Behavior<TextEditor>
     {
+        private bool _isUpdating;
+        private bool _isUpdatingText;
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(AvalonEditBehavior),
                 new FrameworkPropertyMetadata(default(string), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, PropertyChangedCallback));
@@ -41,13 +43,55 @@ namespace WeChatMomentSimulator.Desktop.Views.Controls
 
         private void AssociatedObjectOnTextChanged(object sender, EventArgs eventArgs)
         {
-            if (AssociatedObject != null && !_isUpdatingText)
+            if (_isUpdating)
+                return;
+
+            _isUpdating = true;
+            try
             {
                 Text = AssociatedObject.Text;
             }
+            finally
+            {
+                _isUpdating = false;
+            }
+        }
+
+        private void UpdateText()
+        {
+            if (_isUpdating)
+                return;
+
+            _isUpdating = true;
+            try
+            {
+                // 确保在设置文本前关闭所有撤销组
+                if (AssociatedObject.Document != null)
+                {
+                    // 将Document转换为IDocument接口
+                    var document = AssociatedObject.Document as ICSharpCode.AvalonEdit.Document.IDocument;
+                    if (document != null)
+                    {
+                        using (document.OpenUndoGroup())
+                        {
+                            // 故意在这里不做任何操作，只是确保撤销组正确关闭
+                        }
+                    }
+                }
+
+                // 清理当前的撤销栈
+                AssociatedObject.Document?.UndoStack?.ClearAll();
+
+                // 设置文本
+                AssociatedObject.Text = Text ?? string.Empty;
+            }
+            finally
+            {
+                _isUpdating = false;
+            }
         }
         
-        private bool _isUpdatingText;
+        
 
         private static void PropertyChangedCallback(DependencyObject dependencyObject,
                     DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
@@ -59,25 +103,6 @@ namespace WeChatMomentSimulator.Desktop.Views.Controls
             }
         }
 
-        private void UpdateText()
-        {
-            if (AssociatedObject != null && !_isUpdatingText)
-            {
-                _isUpdatingText = true;
-                try
-                {
-                    var caretOffset = AssociatedObject.CaretOffset;
-                    AssociatedObject.Text = Text ?? string.Empty;
-                    if (caretOffset <= AssociatedObject.Text.Length)
-                    {
-                        AssociatedObject.CaretOffset = caretOffset;
-                    }
-                }
-                finally
-                {
-                    _isUpdatingText = false;
-                }
-            }
-        }
+    
     }
 }

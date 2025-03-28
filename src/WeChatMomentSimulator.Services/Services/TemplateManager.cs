@@ -24,17 +24,19 @@ namespace WeChatMomentSimulator.Services.Services
     {
         private readonly string _templatesDirectory;
         private readonly ILogger<TemplateManager> _logger;
-        private readonly ISvgRenderer _svgRenderer;
+        private readonly ISvgCustomRenderer _svgRenderer;
         private const string INDEX_FILE = "templates.json";
         private static readonly Regex _placeholderRegex = new Regex(@"{{([^{}]+)}}", RegexOptions.Compiled);
+        private readonly IFileFinder _fileFinder;
 
         /// <summary>
         /// 构造函数
         /// </summary>
-        public TemplateManager(ISvgRenderer svgRenderer = null)
+        public TemplateManager(ISvgCustomRenderer svgRenderer = null, IFileFinder fileFinder = null)
         {
             _logger = LoggerExtensions.GetLogger<TemplateManager>();
             _svgRenderer = svgRenderer;
+            _fileFinder = fileFinder ?? new FileFinder();
 
             // 获取用户AppData目录下的模板存储路径
             string appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -165,7 +167,7 @@ namespace WeChatMomentSimulator.Services.Services
             try
             {
                 var templates = await GetTemplatesByTypeAsync(templateType);
-                var defaultTemplate = templates.FirstOrDefault(t => t.IsDefault)
+                var defaultTemplate = templates.FirstOrDefault(t => t.IsBuiltIn)
                                       ?? templates.FirstOrDefault();
 
                 if (defaultTemplate != null)
@@ -330,7 +332,7 @@ namespace WeChatMomentSimulator.Services.Services
                     Name = "基本模板",
                     Description = "微信朋友圈基本显示模板",
                     Type = TemplateType.Moment,
-                    IsDefault = true,
+                    IsBuiltIn = true,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
                     Content = GetBasicTemplateContent()
@@ -482,7 +484,7 @@ namespace WeChatMomentSimulator.Services.Services
                     template.Name,
                     template.Description,
                     template.Type,
-                    template.IsDefault,
+                    template.IsBuiltIn,
                     template.CreatedAt,
                     template.UpdatedAt,
                     Content = template.Content ?? string.Empty
@@ -559,9 +561,60 @@ namespace WeChatMomentSimulator.Services.Services
             }
         }
 
-        public Task<string> ConvertTemplateToStringAsync(Template template)
+        // 修改为异步方法
+        private async Task<string> GetDefaultTemplateAsync()
         {
-            throw new NotImplementedException();
+            // 定义搜索目录
+            var searchDirectories = new[]
+            {
+                _templatesDirectory,
+                Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates"),
+                // 获取父项目目录
+                Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory)?.FullName ?? "", "Templates")
+            };
+
+            // 使用文件查找服务查找默认模板
+            string defaultTemplatePath = await _fileFinder.FindFileAsync("default.svg", searchDirectories);
+
+            if (!string.IsNullOrEmpty(defaultTemplatePath))
+            {
+                try
+                {
+                    return await File.ReadAllTextAsync(defaultTemplatePath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "读取默认模板文件失��: {FilePath}", defaultTemplatePath);
+                }
+            }
+
+            // 备用模板内容
+            string fallbackTemplate = @"<svg width=""375"" height=""667"" xmlns=""http://www.w3.org/2000/svg"">
+  <!-- 默认空模板 -->
+  <text x=""187.5"" y=""333.5"" font-family=""Arial"" font-size=""16"" fill=""#666666"" text-anchor=""middle"">空白模板</text>
+</svg>";
+
+            // 保存备用模板
+            try
+            {
+                string savePath = Path.Combine(_templatesDirectory, "default.svg");
+                await File.WriteAllTextAsync(savePath, fallbackTemplate);
+                _logger.LogInformation("保存备用模板到: {FilePath}", savePath);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "保存备用模板失败");
+            }
+
+            return fallbackTemplate;
+        }
+
+        private string GetDefaultTemplate()
+        {
+            return @"<svg width=""375"" height=""667"" xmlns=""http://www.w3.org/2000/svg"">
+  <!-- 默认空模板 -->
+  <text x=""187.5"" y=""333.5"" font-family=""Arial"" font-size=""16"" fill=""#666666"" text-anchor=""middle"">空白模板</text>
+</svg>";
         }
 
         #region 私有辅助方法
@@ -609,7 +662,7 @@ namespace WeChatMomentSimulator.Services.Services
                     Name = t.Name,
                     Description = t.Description,
                     Type = t.Type,
-                    IsDefault = t.IsDefault,
+                    IsBuiltIn = t.IsBuiltIn,
                     CreatedAt = t.CreatedAt,
                     UpdatedAt = t.UpdatedAt
                 }).ToList();
@@ -999,6 +1052,43 @@ namespace WeChatMomentSimulator.Services.Services
                 _logger.LogError(ex, "获取模板列表失败");
                 throw;
             }
+        }
+        
+        
+        public async Task<string> ConvertTemplateToStringAsync(Template template)
+        {
+            // 检查模板是否为空
+            if (template == null)
+            {
+                _logger.LogWarning("提供了空模板，返回默认模板");
+                return await GetDefaultTemplateAsync();
+            }
+
+            // 如果模板内容已经存在，直接返回
+            if (!string.IsNullOrEmpty(template.Content))
+            {
+                return template.Content;
+            }
+
+            // 尝试通过模板名称找到模板文件
+            if (!string.IsNullOrEmpty(template.Name))
+            {
+                string templateFilePath = Path.Combine(_templatesDirectory, $"{template.Name}.svg");
+                if (File.Exists(templateFilePath))
+                {
+                    try
+                    {
+                        return await File.ReadAllTextAsync(templateFilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "从文件加载模板失败: {FilePath}", templateFilePath);
+                    }
+                }
+            }
+
+            // 返回默认模板
+            return await GetDefaultTemplateAsync();
         }
 
         #endregion

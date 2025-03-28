@@ -12,6 +12,7 @@ using WeChatMomentSimulator.Core.Models.Template;
 using WeChatMomentSimulator.Desktop.Utils;
 using WeChatMomentSimulator.Desktop.ViewModels.Base;
 using WeChatMomentSimulator.Services.DataBinding;
+using LoggerExtensions = WeChatMomentSimulator.Core.Logging.LoggerExtensions;
 
 namespace WeChatMomentSimulator.Desktop.ViewModels
 {
@@ -31,7 +32,7 @@ namespace WeChatMomentSimulator.Desktop.ViewModels
     public class SvgTemplateEditorViewModel : ViewModelBase
     {
         private readonly ITemplateManager _templateManager;
-        private readonly ISvgRenderer _svgRenderer;
+        private readonly ISvgCustomRenderer _svgRenderer;
         private readonly DataBindingContext _dataBindingContext;
         private readonly PlaceholderEditorViewModel _placeholderEditorVM;
         private readonly ILogger<SvgTemplateEditorViewModel> _logger;
@@ -191,16 +192,15 @@ namespace WeChatMomentSimulator.Desktop.ViewModels
         /// </summary>
         public SvgTemplateEditorViewModel(
             ITemplateManager templateManager,
-            ISvgRenderer svgRenderer,
+            ISvgCustomRenderer svgRenderer,
             DataBindingContext dataBindingContext,
-            PlaceholderEditorViewModel placeholderEditorViewModel,
-            ILogger<SvgTemplateEditorViewModel> logger)
+            PlaceholderEditorViewModel placeholderEditorViewModel)
         {
             _templateManager = templateManager ?? throw new ArgumentNullException(nameof(templateManager));
             _svgRenderer = svgRenderer ?? throw new ArgumentNullException(nameof(svgRenderer));
             _dataBindingContext = dataBindingContext ?? throw new ArgumentNullException(nameof(dataBindingContext));
             _placeholderEditorVM = placeholderEditorViewModel ?? throw new ArgumentNullException(nameof(placeholderEditorViewModel));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = LoggerExtensions.GetLogger<SvgTemplateEditorViewModel>();
             
             // 初始化命令
             NewTemplateCommand = new AsyncRelayCommand(ExecuteNewTemplateAsync);
@@ -293,26 +293,40 @@ namespace WeChatMomentSimulator.Desktop.ViewModels
             try
             {
                 _logger.LogInformation("加载模板: {TemplateName}", templateName);
-                
+
                 // 加载模板内容
                 Template _template = await _templateManager.GetTemplateByNameAsync(templateName);
+        
+                // 检查模板是否存在
+                if (_template == null)
+                {
+                    _logger.LogWarning("模板不存在: {TemplateName}", templateName);
+                    StatusText = $"找不到模板: {templateName}";
+            
+                    // 创建一个空模板对象
+                    _template = new Template 
+                    { 
+                        Name = templateName,
+                        Content = null  // 这将触发使用默认模板
+                    };
+                }
+        
                 TemplateContent = await _templateManager.ConvertTemplateToStringAsync(_template);
                 CurrentTemplateName = templateName;
-                
+
                 // 更新绑定上下文
                 _dataBindingContext.SetTemplate(TemplateContent);
                 _placeholderEditorVM.UpdateTemplate(TemplateContent);
-                
+
                 // 刷新预览
                 await RefreshPreviewAsync();
-                
+
                 StatusText = $"已加载模板: {templateName}";
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "加载模板失败: {TemplateName}", templateName);
                 StatusText = $"加载模板失败: {ex.Message}";
-                throw;
             }
         }
         

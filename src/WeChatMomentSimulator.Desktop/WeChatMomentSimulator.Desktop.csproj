@@ -52,6 +52,7 @@
     <Page Remove="Views\ContentSettingsView.xaml" />
     <Page Remove="Views\MomentPreviewView.xaml" />
     <Page Remove="Views\UserSettingsView.xaml" />
+    <Page Remove="Tests\SvgTemplateEditor.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="MainWindow.xaml.cs" />
@@ -59,6 +60,8 @@
     <Compile Remove="Views\MomentPreviewView.xaml.cs" />
     <Compile Remove="Views\UserSettingsView.xaml.cs" />
     <Compile Remove="Rendering\TemplateManager.cs" />
+    <Compile Remove="Rendering\SvgRenderer.cs" />
+    <Compile Remove="Tests\SvgTemplateEditor.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xaml.Behaviors">

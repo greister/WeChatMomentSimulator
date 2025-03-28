@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 
-namespace WeChatMomentSimulator.Core.Interfaces
+namespace WeChatMomentSimulator.Core.Interfaces.Services
 {
     /// <summary>
     /// SVG渲染器接口
     /// </summary>
-    public interface ISvgRenderer
+    public interface ISvgCustomRenderer
     {
         /// <summary>
         /// 将SVG内容渲染为图像数据

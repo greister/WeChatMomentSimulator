@@ -7,16 +7,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using WeChatMomentSimulator.Core.DataBinding;
 using WeChatMomentSimulator.Core.Interfaces;
 using WeChatMomentSimulator.Core.Interfaces.Repositories;
 using WeChatMomentSimulator.Core.Interfaces.Services;
 using WeChatMomentSimulator.Core.Logging;
-using WeChatMomentSimulator.Desktop.Rendering;
 using WeChatMomentSimulator.Desktop.Services;
 using WeChatMomentSimulator.Services.Repositories;
 using WeChatMomentSimulator.Services.Services;
 using WeChatMomentSimulator.Desktop.ViewModels;
 using WeChatMomentSimulator.Desktop.Views;
+using WeChatMomentSimulator.Services.DataBinding;
+using WeChatMomentSimulator.Services.Rendering;
 
 namespace WeChatMomentSimulator.Desktop
 {
@@ -25,7 +27,7 @@ namespace WeChatMomentSimulator.Desktop
     /// </summary>
     public partial class App : Application
     {
-        private readonly IHost _host;
+        public readonly IHost _host;
 
         public App()
         {
@@ -73,10 +75,9 @@ namespace WeChatMomentSimulator.Desktop
                             templateDirectory)
                     );
                     // 在应用程序依赖项注册处添加
-                    services.AddSingleton<ISvgRenderer, SvgRenderer>();
+                    services.AddSingleton<ISvgCustomRenderer, SvgRenderer>();
                     services.AddSingleton<ITemplateManager, TemplateManager>();
-                    services.AddSingleton<SvgTemplateEditorViewModel>();
-                    services.AddTransient<SvgTemplateEditorWindow>();
+                    
                     
                     // 注册应用服务
                     //services.AddSingleton<ITemplateService, TemplateService>();
@@ -85,12 +86,21 @@ namespace WeChatMomentSimulator.Desktop
                     // In ConfigureServices method
                     services.AddSingleton<ISettingsService, SettingsService>();
                     
+                    services.AddSingleton<IFileFinder, FileFinder>();
+
+                    // 注册数据绑定相关服务
+                    services.AddSingleton<IDataProvider, MemoryDataProvider>();
+                    services.AddSingleton<DataBindingContext>();
+                    
                     // 注册视图模型
                     services.AddSingleton<MainViewModel>();
+                    services.AddSingleton<PlaceholderEditorViewModel>();
+                    services.AddSingleton<SvgTemplateEditorViewModel>();
                     
                     
                     // 注册主窗口
                     services.AddSingleton<MainWindow>();
+                    services.AddTransient<SvgTemplateEditorWindow>();
                 })
                 .UseSerilog() // 配置使用 Serilog
                 .ConfigureLogging((hostContext, logging) =>
