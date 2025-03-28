@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using WeChatMomentSimulator.Core.DataBinding;
 using WeChatMomentSimulator.Core.Interfaces;
+using WeChatMomentSimulator.Core.Interfaces.DataBingding;
 using WeChatMomentSimulator.Core.Interfaces.Repositories;
 using WeChatMomentSimulator.Core.Interfaces.Services;
 using WeChatMomentSimulator.Core.Logging;
@@ -83,6 +84,7 @@ namespace WeChatMomentSimulator.Desktop
                     //services.AddSingleton<ITemplateService, TemplateService>();
                     // In ConfigureServices method
                     services.AddSingleton<IDialogService, DialogService>();
+                    services.AddSingleton<ITemplateEditorService, TemplateEditorService>();
                     // In ConfigureServices method
                     services.AddSingleton<ISettingsService, SettingsService>();
                     
@@ -90,17 +92,19 @@ namespace WeChatMomentSimulator.Desktop
 
                     // 注册数据绑定相关服务
                     services.AddSingleton<IDataProvider, MemoryDataProvider>();
-                    services.AddSingleton<DataBindingContext>();
+                    services.AddSingleton<IDataBindingContext,  DataBindingContext>();
                     
                     // 注册视图模型
                     services.AddSingleton<MainViewModel>();
                     services.AddSingleton<PlaceholderEditorViewModel>();
                     services.AddSingleton<SvgTemplateEditorViewModel>();
+                    //services.AddSingleton<SvgTemplateEditorViewModel328>();
                     
                     
                     // 注册主窗口
                     services.AddSingleton<MainWindow>();
                     services.AddTransient<SvgTemplateEditorWindow>();
+                    //services.AddTransient<SvgTemplateEditor328Window>();
                 })
                 .UseSerilog() // 配置使用 Serilog
                 .ConfigureLogging((hostContext, logging) =>

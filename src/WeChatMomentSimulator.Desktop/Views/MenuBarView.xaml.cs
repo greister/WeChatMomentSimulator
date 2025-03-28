@@ -61,28 +61,13 @@ public partial class MenuBarView : UserControl
     
   
     
-    // 命令执行方法
-    // private void ExecuteOpenTemplateEditor()
-    // {
-    //     try
-    //     {
-    //         var editorWindow = _serviceProvider.GetService<SvgTemplateEditorWindow>();
-    //         editorWindow?.Show();
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         // 处理异常
-    //     }
-    // }
-
-    // ... existing code ...
 
     private void OpenSvgEditor2_Click(object sender, RoutedEventArgs e)
     {
         _logger.Information("用户点击了SVG模板编辑器窗口按钮");
         try
         {
-            // var editorWindow = _serviceProvider.GetService<SvgTemplateEditorWindow>();
+            // var editorWindow = _serviceProvider.GetService<SvgTemplateEditorWindow328>();
             var editorWindow = _serviceProvider.GetRequiredService<SvgTemplateEditorWindow>();;
             
             _logger.Debug("已创建SVG模板编辑器窗口实例");

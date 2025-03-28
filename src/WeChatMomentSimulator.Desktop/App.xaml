@@ -20,6 +20,16 @@
                 <Setter Property="Margin" Value="0,0,0,8" />
                 <Setter Property="FontSize" Value="15" />
             </Style>
+            
+            <Style x:Key="EditorWindowStyle" TargetType="Window">
+                <Setter Property="Icon" Value="/Assets/Icons/template.png"/>
+                <Setter Property="Background" Value="{DynamicResource WindowBackground}"/>
+            </Style>
+
+            <Style x:Key="ToolBarButtonStyle" TargetType="Button">
+                <Setter Property="Margin" Value="2"/>
+                <Setter Property="Padding" Value="5"/>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

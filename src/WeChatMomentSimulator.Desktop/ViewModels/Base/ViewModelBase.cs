@@ -33,7 +33,28 @@ namespace WeChatMomentSimulator.Desktop.ViewModels
             OnPropertyChanged(propertyName);
             return true;
         }
-
+        
+        /// <summary>
+        /// Sets property value and raises PropertyChanged event if value changed
+        /// </summary>
+        /// <typeparam name="T">Property type</typeparam>
+        /// <param name="field">Backing field reference</param>
+        /// <param name="value">New value</param>
+        /// <param name="onChanged">Action to invoke when value changes</param>
+        /// <param name="propertyName">Property name (auto-filled by compiler)</param>
+        /// <returns>True if value changed</returns>
+        /// <remarks>
+        /// This method allows for additional actions to be taken when a property changes,
+        /// such as updating other properties or performing validation.
+        /// </remarks>
+        protected bool SetProperty<T>(ref T field, T value, Action onChanged, [CallerMemberName] string propertyName = null)
+        {
+            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+            field = value;
+            onChanged?.Invoke();
+            OnPropertyChanged(propertyName);
+            return true;
+        }
         /// <summary>
         /// Raises PropertyChanged event
         /// </summary>

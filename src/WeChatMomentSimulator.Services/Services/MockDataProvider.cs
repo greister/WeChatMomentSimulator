@@ -17,6 +17,8 @@ namespace WeChatMomentSimulator.Services.DataBinding
         private readonly ILogger<MockDataProvider> _logger;
         private readonly Dictionary<string, object> _data = new Dictionary<string, object>();
         private readonly Random _random = new Random();
+        private bool _batchUpdateMode;
+        private readonly HashSet<string> _batchUpdatedKeys = new HashSet<string>();
         
         // 预设数据集合
         private readonly Dictionary<string, Dictionary<string, object>> _dataSets;
@@ -79,7 +81,17 @@ namespace WeChatMomentSimulator.Services.DataBinding
         {
             _logger.LogDebug("更新占位符 '{Key}' 的值为 '{Value}'", key, value);
             _data[key] = value;
-            DataChanged?.Invoke(this, new DataChangedEventArgs(key, value));
+            // 如果不是批量更新模式，则触发事件
+            if (!BatchUpdateMode)
+            {
+                DataChanged?.Invoke(this, new DataChangedEventArgs(key, value));
+            }
+            else
+            {
+                // 记录已更新的键，以便退出批量模式时使用
+                _batchUpdatedKeys.Add(key);
+            }
+            //DataChanged?.Invoke(this, new DataChangedEventArgs(key, value));
         }
         
         /// <summary>
@@ -286,5 +298,27 @@ namespace WeChatMomentSimulator.Services.DataBinding
             
             return texts[_random.Next(texts.Length)];
         }
+        /// <summary>
+        /// 获取或设置批量更新模式
+        /// </summary>
+        public bool BatchUpdateMode
+        {
+            get => _batchUpdateMode;
+            set
+            {
+                if (_batchUpdateMode != value)
+                {
+                    _batchUpdateMode = value;
+                
+                    // 如果从批量模式切换到非批量模式，触发批量更新事件
+                    if (!_batchUpdateMode && _batchUpdatedKeys.Count > 0)
+                    {
+                        DataChanged?.Invoke(this, new DataChangedEventArgs());
+                        _batchUpdatedKeys.Clear();
+                    }
+                }
+            }
+        }
+        
     }
 }

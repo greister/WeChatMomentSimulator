@@ -15,12 +15,65 @@ namespace WeChatMomentSimulator.Services.DataBinding
     {
         private readonly ILogger<MemoryDataProvider> _logger;
         private readonly ConcurrentDictionary<string, object> _data = new ConcurrentDictionary<string, object>();
+        // 批量更新模式标志
+        private bool _batchUpdateMode;
+        // 存储所有数据的字典
+        private readonly Dictionary<string, object> _dataStore = new Dictionary<string, object>();
 
+        
+            // 在批量更新模式下已更新的键集合
+        private readonly HashSet<string> _batchUpdatedKeys = new HashSet<string>();
         /// <summary>
         /// 数据变更事件
         /// </summary>
         public event EventHandler<DataChangedEventArgs> DataChanged;
 
+    
+        /// <summary>
+        /// 批量更新模式 - 启用时不会立即触发事件
+        /// </summary>
+        public bool BatchUpdateMode
+        {
+            get => _batchUpdateMode;
+            set
+            {
+                if (_batchUpdateMode == value)
+                    return;
+                
+                _batchUpdateMode = value;
+            
+                // 如果关闭批量更新模式，且有数据更新，触发一次批量事件
+                if (!_batchUpdateMode && _batchUpdatedKeys.Count > 0)
+                {
+                    // 触发批量更新事件
+                    DataChanged?.Invoke(this, new DataChangedEventArgs());
+                    _batchUpdatedKeys.Clear();
+                }
+            }
+        }
+
+        
+        /// <summary>
+        /// 更新数据值
+        /// </summary>
+        public void UpdateData(string key, object value)
+        {
+            if (string.IsNullOrEmpty(key))
+                throw new ArgumentException("键不能为空", nameof(key));
+            
+            _dataStore[key] = value;
+            _logger.LogDebug("已更新键 {Key} 的值为 {Value}", key, value);
+            if (!BatchUpdateMode)
+            {
+                // 非批量模式，立即触发单个数据更新事件
+                DataChanged?.Invoke(this, new DataChangedEventArgs(key, value));
+            }
+            else
+            {
+                // 批量模式，仅记录已更新的键
+                _batchUpdatedKeys.Add(key);
+            }
+        }
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -67,15 +120,7 @@ namespace WeChatMomentSimulator.Services.DataBinding
             return _data.TryGetValue(key, out value);
         }
 
-        /// <summary>
-        /// 更新数据
-        /// </summary>
-        public void UpdateData(string key, object value)
-        {
-            _data[key] = value;
-            _logger.LogDebug("已更新键 {Key} 的值为 {Value}", key, value);
-            DataChanged?.Invoke(this, new DataChangedEventArgs(key, value));
-        }
+
 
         /// <summary>
         /// 批量更新数据

@@ -46,6 +46,12 @@ namespace WeChatMomentSimulator.Core.DataBinding
         /// 数据变更事件
         /// </summary>
         event EventHandler<DataChangedEventArgs> DataChanged;
+        
+        /// <summary>
+        /// 获取或设置批量更新模式
+        /// 当为true时，数据变更不会立即触发DataChanged事件
+        /// </summary>
+        bool BatchUpdateMode { get; set; }
     }
     
     /// <summary>

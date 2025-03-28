@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using WeChatMomentSimulator.Core.DataBinding;
+using WeChatMomentSimulator.Core.Interfaces.DataBingding;
 using WeChatMomentSimulator.Core.Models.Template;
 using WeChatMomentSimulator.Desktop.ViewModels.Base;
 using WeChatMomentSimulator.Services.DataBinding;
@@ -19,7 +20,7 @@ namespace WeChatMomentSimulator.Desktop.ViewModels
     public class PlaceholderEditorViewModel : ViewModelBase
     {
         private readonly ILogger<PlaceholderEditorViewModel> _logger;
-        private readonly DataBindingContext _bindingContext;
+        private readonly IDataBindingContext _bindingContext;
         private readonly IDataProvider _dataProvider;
         private KeyValuePair<string, Dictionary<string, object>> _selectedDataSet;
         
@@ -78,7 +79,7 @@ namespace WeChatMomentSimulator.Desktop.ViewModels
         /// 构造函数
         /// </summary>
         public PlaceholderEditorViewModel(
-            DataBindingContext bindingContext,
+            IDataBindingContext bindingContext,
             IDataProvider dataProvider,
             ILogger<PlaceholderEditorViewModel> logger)
         {
@@ -255,7 +256,7 @@ namespace WeChatMomentSimulator.Desktop.ViewModels
     /// </summary>
     public class PlaceholderBindingViewModel : ViewModelBase
     {
-        private readonly PlaceholderBinding _binding;
+        private readonly IPlaceholderBinding _binding;
         private readonly PlaceholderEditorViewModel _parent;
         
         /// <summary>
@@ -296,7 +297,7 @@ namespace WeChatMomentSimulator.Desktop.ViewModels
         /// <summary>
         /// 构造函数
         /// </summary>
-        public PlaceholderBindingViewModel(PlaceholderBinding binding, PlaceholderEditorViewModel parent)
+        public PlaceholderBindingViewModel(IPlaceholderBinding binding, PlaceholderEditorViewModel parent)
         {
             _binding = binding ?? throw new ArgumentNullException(nameof(binding));
             _parent = parent ?? throw new ArgumentNullException(nameof(parent));

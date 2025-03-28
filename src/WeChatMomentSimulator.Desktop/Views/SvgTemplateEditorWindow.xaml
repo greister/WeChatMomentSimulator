@@ -3,139 +3,292 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WeChatMomentSimulator.Desktop.Views"
+        xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+        xmlns:behaviors="clr-namespace:Microsoft.Xaml.Behaviors;assembly=Microsoft.Xaml.Behaviors"
         xmlns:controls="clr-namespace:WeChatMomentSimulator.Desktop.Views.Controls"
-        xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
-        Title="SVG模板编辑器" Height="700" Width="1200">
-    
+        Title="SVG模板编辑器" 
+        Height="700" Width="1200"
+        WindowStartupLocation="CenterScreen">
+
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <!-- 工具栏按钮样式 -->
+        <Style x:Key="ToolButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F0F0F0"/>
+                    <Setter Property="BorderBrush" Value="#CCCCCC"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 面板选项卡按钮样式 -->
+        <Style x:Key="PanelTabButtonStyle" TargetType="RadioButton">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="border" 
+                                BorderThickness="0,0,0,2" 
+                                BorderBrush="Transparent"
+                                Background="Transparent"
+                                Padding="15,8">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#F0F0F0"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#0078D7"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
-    
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        
-        <!-- 工具栏 -->
-        <Grid Grid.Row="0" Margin="0,0,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            
-            <TextBlock Grid.Column="0" Text="模板名称:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-            
-            <ComboBox Grid.Column="1" 
-                      ItemsSource="{Binding AvailableTemplates}"
-                      SelectedItem="{Binding CurrentTemplateName, Mode=TwoWay}"
-                      IsEditable="True"
-                      Margin="0,0,10,0"/>
-            
-            <Button Grid.Column="2" Content="新建" Command="{Binding NewTemplateCommand}" Margin="5,0"/>
-            <Button Grid.Column="3" Content="保存" Command="{Binding SaveTemplateCommand}" Margin="5,0"/>
-            <Button Grid.Column="4" Content="删除" Command="{Binding DeleteTemplateCommand}" Margin="5,0"/>
-            <Button Grid.Column="5" Content="导出图片" Command="{Binding ExportImageCommand}" Margin="5,0"/>
-        </Grid>
-        
-        <!-- 主编辑区域 -->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="5"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
-            <!-- SVG编辑器 -->
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                
-                <TextBlock Grid.Row="0" Text="SVG源代码:" Margin="0,0,0,5" FontWeight="SemiBold"/>
-                
-                <Border Grid.Row="1" BorderBrush="#DDDDDD" BorderThickness="1">
-                    <avalonEdit:TextEditor
-                        x:Name="SvgEditor"
-                        FontFamily="Consolas, Courier New"
-                        FontSize="13"
-                        SyntaxHighlighting="XML"
-                        ShowLineNumbers="True"
-                        WordWrap="False">
-                        <i:Interaction.Behaviors>
-                            <controls:AvalonEditBehavior Text="{Binding TemplateContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </i:Interaction.Behaviors>
-                    </avalonEdit:TextEditor>
-                </Border>
-            </Grid>
-            
-            <!-- 分隔线 -->
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch"/>
-            
-            <!-- 预览区域 -->
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <TextBlock Text="预览:" Margin="0,0,5,5" FontWeight="SemiBold"/>
-                    <Button Content="刷新" Command="{Binding RefreshPreviewCommand}" Margin="5,0"/>
-                    <ComboBox ItemsSource="{Binding PreviewSizes}" 
-                              SelectedItem="{Binding SelectedPreviewSize}"
-                              DisplayMemberPath="Name"
-                              Width="120"
-                              Margin="5,0"/>
-                </StackPanel>
-                
-                <Border Grid.Row="1" BorderBrush="#DDDDDD" BorderThickness="1">
-                    <Grid>
-                        <!-- 预览图像 -->
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                            <Image Source="{Binding PreviewImage}" 
-                                   HorizontalAlignment="Center" 
-                                   VerticalAlignment="Center"/>
-                        </ScrollViewer>
-                        
-                        <!-- 加载指示器 -->
-                        <Grid Background="#80FFFFFF" 
-                              Visibility="{Binding IsRefreshing, Converter={StaticResource BoolToVis}}">
-                            <TextBlock Text="正在渲染..." 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center"/>
-                        </Grid>
-                    </Grid>
-                </Border>
-            </Grid>
-        </Grid>
-        
-        <!-- 占位符编辑面板 -->
-        <Expander Grid.Row="2" Header="数据绑定" IsExpanded="True" Margin="0,10,0,0">
-            <controls:PlaceholderEditorControl 
-                DataContext="{Binding PlaceholderEditorVM}" 
-                Height="300"/>
-        </Expander>
-        
-        <!-- 状态栏 -->
-        <StatusBar Grid.Row="3" Height="25" Margin="0,10,0,0">
+
+    <DockPanel>
+        <!-- 1. 菜单栏 -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="文件">
+                <MenuItem Header="新建模板" Command="{Binding NewTemplateCommand}"/>
+                <MenuItem Header="打开模板" Command="{Binding OpenTemplateCommand}"/>
+                <MenuItem Header="保存" Command="{Binding SaveTemplateCommand}"/>
+                <MenuItem Header="另存为" Command="{Binding SaveAsTemplateCommand}"/>
+                <Separator/>
+                <MenuItem Header="退出" Command="{Binding ExitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="编辑">
+                <MenuItem Header="撤销" Command="{Binding UndoCommand}"/>
+                <MenuItem Header="重做" Command="{Binding RedoCommand}"/>
+                <Separator/>
+                <MenuItem Header="查找/替换" Command="{Binding FindReplaceCommand}"/>
+            </MenuItem>
+            <MenuItem Header="视图">
+                <MenuItem Header="预览面板" IsCheckable="True" IsChecked="{Binding IsPanelVisible}" 
+                          Command="{Binding TogglePanelCommand}" CommandParameter="Preview"/>
+                <MenuItem Header="占位符面板" IsCheckable="True" IsChecked="{Binding IsPanelVisible}"
+                          Command="{Binding TogglePanelCommand}" CommandParameter="Placeholders"/>
+                <MenuItem Header="模拟数据面板" IsCheckable="True" IsChecked="{Binding IsPanelVisible}"
+                          Command="{Binding TogglePanelCommand}" CommandParameter="MockData"/>
+                <Separator/>
+                <MenuItem Header="放大" Command="{Binding ZoomInCommand}"/>
+                <MenuItem Header="缩小" Command="{Binding ZoomOutCommand}"/>
+                <MenuItem Header="重置缩放" Command="{Binding ResetZoomCommand}"/>
+            </MenuItem>
+            <MenuItem Header="占位符">
+                <MenuItem Header="插入文本占位符" Command="{Binding InsertTextPlaceholderCommand}"/>
+                <MenuItem Header="插入图片占位符" Command="{Binding InsertImagePlaceholderCommand}"/>
+                <MenuItem Header="刷新所有占位符" Command="{Binding RefreshPlaceholdersCommand}"/>
+            </MenuItem>
+            <MenuItem Header="数据">
+                <MenuItem Header="生成模拟数据" Command="{Binding GenerateMockDataCommand}"/>
+                <MenuItem Header="导入数据" Command="{Binding ImportDataCommand}"/>
+                <MenuItem Header="导出数据" Command="{Binding ExportDataCommand}"/>
+            </MenuItem>
+            <MenuItem Header="帮助">
+                <MenuItem Header="关于" Command="{Binding AboutCommand}"/>
+                <MenuItem Header="使用帮助" Command="{Binding HelpCommand}"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- 2. 工具栏 -->
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <Button Content="新建" Command="{Binding NewTemplateCommand}" 
+                        Style="{StaticResource ToolButtonStyle}" ToolTip="新建模板"/>
+                <Button Content="打开" Command="{Binding OpenTemplateCommand}" 
+                        Style="{StaticResource ToolButtonStyle}" ToolTip="打开模板"/>
+                <Button Content="保存" Command="{Binding SaveTemplateCommand}" 
+                        Style="{StaticResource ToolButtonStyle}" ToolTip="保存模板"/>
+                <Separator/>
+                <Button Content="撤销" Command="{Binding UndoCommand}" 
+                        Style="{StaticResource ToolButtonStyle}" ToolTip="撤销"/>
+                <Button Content="重做" Command="{Binding RedoCommand}" 
+                        Style="{StaticResource ToolButtonStyle}" ToolTip="重做"/>
+                <Separator/>
+                <TextBlock Text="模板库: " VerticalAlignment="Center"/>
+                <ComboBox Width="150" ItemsSource="{Binding AvailableTemplates}" 
+                          SelectedItem="{Binding SelectedTemplate}" Margin="2"/>
+                <Separator/>
+                <Button Content="刷新预览" Command="{Binding RefreshPreviewCommand}" 
+                        Style="{StaticResource ToolButtonStyle}" ToolTip="刷新预览"/>
+            </ToolBar>
+        </ToolBarTray>
+
+        <!-- 3. 状态栏 -->
+        <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>
-                <TextBlock Text="{Binding StatusText}"/>
+                <TextBlock Text="{Binding EditorPosition, StringFormat='行:{0}'}"/>
             </StatusBarItem>
             <Separator/>
             <StatusBarItem>
-                <TextBlock Text="{Binding SvgInfo}"/>
+                <TextBlock Text="{Binding DocumentStatus}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="UTF-8"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="{Binding PlaceholderCount, StringFormat='占位符:{0}个'}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="{Binding ImageCount, StringFormat='图片:{0}个'}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="{Binding ZoomLevel, StringFormat='缩放:{0}%'}"/>
             </StatusBarItem>
         </StatusBar>
-    </Grid>
+
+        <!-- 4. 主编辑区和折叠面板 -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="{Binding PanelWidth}"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 4.1 主编辑区 - 使用AvalonEdit -->
+            <avalonedit:TextEditor Grid.Column="0" 
+                                   x:Name="svgEditor"
+                                   FontFamily="Consolas"
+                                   FontSize="14"
+                                   ShowLineNumbers="True"
+                                   SyntaxHighlighting="XML"
+                                   WordWrap="False">
+                <behaviors:Interaction.Behaviors>
+                    <controls:AvalonEditBehavior Text="{Binding EditorText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </behaviors:Interaction.Behaviors>
+            </avalonedit:TextEditor>
+
+            <!-- 4.2 可调整宽度的分隔线 -->
+            <GridSplitter Grid.Column="1"
+                         Width="5"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Stretch"
+                         Background="#DDDDDD"
+                         Visibility="{Binding IsPanelVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+            <!-- 4.3 折叠面板区域 -->
+            <Grid Grid.Column="2" Visibility="{Binding IsPanelVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- 面板选项标签 -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <RadioButton Content="预览" 
+                                     IsChecked="{Binding ActivePanel, ConverterParameter=Preview, Converter={StaticResource EnumToBooleanConverter}}"
+                                     Command="{Binding SelectPanelCommand}"
+                                     CommandParameter="Preview"
+                                     Style="{StaticResource PanelTabButtonStyle}"/>
+                        <RadioButton Content="占位符" 
+                                     IsChecked="{Binding ActivePanel, ConverterParameter=Placeholders, Converter={StaticResource EnumToBooleanConverter}}"
+                                     Command="{Binding SelectPanelCommand}"
+                                     CommandParameter="Placeholders"
+                                     Style="{StaticResource PanelTabButtonStyle}"/>
+                        <RadioButton Content="模拟数据" 
+                                     IsChecked="{Binding ActivePanel, ConverterParameter=MockData, Converter={StaticResource EnumToBooleanConverter}}"
+                                     Command="{Binding SelectPanelCommand}"
+                                     CommandParameter="MockData"
+                                     Style="{StaticResource PanelTabButtonStyle}"/>
+                    </StackPanel>
+
+                    <Button Grid.Column="1" 
+                            Content="×" 
+                            Command="{Binding ClosePanelCommand}"
+                            Width="30" Height="30"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            FontSize="16"/>
+                </Grid>
+
+                <!-- 面板内容 -->
+                <Grid Grid.Row="1">
+                    <!-- 预览面板 -->
+                    <Grid Visibility="{Binding IsPreviewPanelActive, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Border Grid.Row="0" BorderBrush="#CCCCCC" BorderThickness="1" Margin="5">
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" 
+                                         VerticalScrollBarVisibility="Auto">
+                                <Image Source="{Binding PreviewImage}" 
+                                      Stretch="None" 
+                                      RenderTransformOrigin="0.5,0.5">
+                                    <Image.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform ScaleX="{Binding PreviewZoom}" 
+                                                          ScaleY="{Binding PreviewZoom}"/>
+                                            <RotateTransform Angle="{Binding PreviewRotation}"/>
+                                        </TransformGroup>
+                                    </Image.RenderTransform>
+                                </Image>
+                            </ScrollViewer>
+                        </Border>
+
+                        <!-- 预览控制 -->
+                        <Grid Grid.Row="1" Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                <TextBlock Text="缩放:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                <Button Content="-" Command="{Binding ZoomOutCommand}" 
+                                      Width="24" Height="24" Margin="0,0,2,0"/>
+                                <TextBlock Text="{Binding ZoomLevel, StringFormat='{}{0}%'}" 
+                                         VerticalAlignment="Center" MinWidth="40" 
+                                         TextAlignment="Center" Margin="2,0"/>
+                                <Button Content="+" Command="{Binding ZoomInCommand}" 
+                                      Width="24" Height="24" Margin="2,0,0,0"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                <TextBlock Text="旋转:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                <Button Content="↺" Command="{Binding RotateLeftCommand}" 
+                                      Width="24" Height="24" Margin="0,0,2,0"/>
+                                <TextBlock Text="{Binding PreviewRotation, StringFormat='{}{0}°'}" 
+                                         VerticalAlignment="Center" MinWidth="40" 
+                                         TextAlignment="Center" Margin="2,0"/>
+                                <Button Content="↻" Command="{Binding RotateRightCommand}" 
+                                      Width="24" Height="24" Margin="2,0,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+
+                    <!-- 占位符面板 -->
+                    <ContentControl 
+                        Content="{Binding PlaceholderEditorVM}"
+                        Visibility="{Binding IsPlaceholdersPanelActive, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                    <!-- 模拟数据面板 -->
+                    <ContentControl 
+                        Content="{Binding MockDataEditorVM}"
+                        Visibility="{Binding IsMockDataPanelActive, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </DockPanel>
 </Window>

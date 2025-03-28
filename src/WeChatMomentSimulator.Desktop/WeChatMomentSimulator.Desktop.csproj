@@ -53,6 +53,12 @@
     <Page Remove="Views\MomentPreviewView.xaml" />
     <Page Remove="Views\UserSettingsView.xaml" />
     <Page Remove="Tests\SvgTemplateEditor.xaml" />
+    <Page Remove="Views\SvgTemplateEditorWindow2222.xaml" />
+    <Page Update="Views\SvgTemplateEditorWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <XamlRuntime>Wpf</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="MainWindow.xaml.cs" />
@@ -62,11 +68,17 @@
     <Compile Remove="Rendering\TemplateManager.cs" />
     <Compile Remove="Rendering\SvgRenderer.cs" />
     <Compile Remove="Tests\SvgTemplateEditor.xaml.cs" />
+    <Compile Remove="Tests\Editor\SvgTemplateEditorViewModel333.cs" />
+    <Compile Remove="ViewModels\SvgTemplateEditorViewModel22.cs" />
+    <Compile Remove="Views\SvgTemplateEditorWindow2222.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xaml.Behaviors">
       <HintPath>C:\Users\Grei\.nuget\packages\microsoft.xaml.behaviors.wpf\1.1.39\lib\net5.0-windows7.0\Microsoft.Xaml.Behaviors.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tests\Editor\" />
   </ItemGroup>
   <PropertyGroup>
     <OutputType>WinExe</OutputType>

@@ -22,4 +22,12 @@
 		<PackageReference Include="Serilog.Sinks.File" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="DataBinding\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Interfaces\Services\ITemplateService.cs" />
+	</ItemGroup>
+
 </Project>
