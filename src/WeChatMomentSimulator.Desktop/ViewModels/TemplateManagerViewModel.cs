@@ -41,10 +41,10 @@ namespace WeChatMomentSimulator.Desktop.ViewModels
            
             _logger.Information("模板管理器视图模型已创建");
 
-            OpenTemplateEditorCommand = new RelayCommand(ExecuteOpenTemplateEditor);
-            CreateTemplateCommand = new RelayCommand(ExecuteCreateTemplate);
-            ImportTemplateCommand = new RelayCommand(ExecuteImportTemplate);
-            ExportTemplateCommand = new RelayCommand(ExecuteExportTemplate);
+            // OpenTemplateEditorCommand = new RelayCommand(ExecuteOpenTemplateEditor);
+            // CreateTemplateCommand = new RelayCommand(ExecuteCreateTemplate);
+            // ImportTemplateCommand = new RelayCommand(ExecuteImportTemplate);
+            // ExportTemplateCommand = new RelayCommand(ExecuteExportTemplate);
         }
 
         /// <summary>

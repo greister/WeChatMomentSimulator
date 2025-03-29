@@ -11,6 +11,7 @@
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
 		<PackageReference Include="Serilog" />
 		<PackageReference Include="SharpVectors" />
+		<PackageReference Include="System.Drawing.Common" />
 		<PackageReference Include="System.Windows.Interactivity.WPF" />
 	</ItemGroup>
   <ItemGroup>
@@ -71,6 +72,7 @@
     <Compile Remove="Tests\Editor\SvgTemplateEditorViewModel333.cs" />
     <Compile Remove="ViewModels\SvgTemplateEditorViewModel22.cs" />
     <Compile Remove="Views\SvgTemplateEditorWindow2222.xaml.cs" />
+    <Compile Remove="Servies\SvgRenderingService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xaml.Behaviors">

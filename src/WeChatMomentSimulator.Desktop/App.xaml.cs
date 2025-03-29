@@ -20,6 +20,7 @@ using WeChatMomentSimulator.Desktop.ViewModels;
 using WeChatMomentSimulator.Desktop.Views;
 using WeChatMomentSimulator.Services.DataBinding;
 using WeChatMomentSimulator.Services.Rendering;
+using SvgTemplateEditorWindow = WeChatMomentSimulator.Desktop.Views.SvgTemplateEditorWindow;
 
 namespace WeChatMomentSimulator.Desktop
 {

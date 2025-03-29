@@ -90,7 +90,7 @@ namespace WeChatMomentSimulator.Desktop.ViewModels
             // 命令初始化
             BrowseImageCommand = new RelayCommand<PlaceholderBindingViewModel>(ExecuteBrowseImage);
             EditListCommand = new RelayCommand<PlaceholderBindingViewModel>(ExecuteEditList);
-            GenerateRandomDataCommand = new RelayCommand(ExecuteGenerateRandomData);
+           // GenerateRandomDataCommand = new RelayCommand(ExecuteGenerateRandomData);
             GenerateRandomValueCommand = new RelayCommand<PlaceholderBindingViewModel>(ExecuteGenerateRandomValue);
             
             // 初始化预设数据集

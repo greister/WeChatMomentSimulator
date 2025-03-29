@@ -1,36 +1,40 @@
 ﻿using System.Windows;
-using ICSharpCode.AvalonEdit;
+using System.Windows.Media;
+using WeChatMomentSimulator.Desktop.ViewModels;
 using WeChatMomentSimulator.Desktop.ViewModels;
 
 namespace WeChatMomentSimulator.Desktop.Views
 {
-    public partial class SvgTemplateEditorWindow: Window
+    public partial class SvgTemplateEditorWindow : Window
     {
-        private readonly SvgTemplateEditorViewModel _viewModel;
-        
-        
-        public SvgTemplateEditorWindow(SvgTemplateEditorViewModel viewModel)
+        public SvgTemplateEditorViewModel ViewModel { get; }
+
+        public SvgTemplateEditorWindow()
         {
             InitializeComponent();
-
-            _viewModel = viewModel;
-            DataContext = _viewModel;
-            
-            Loaded += SvgTemplateEditorWindow_Loaded;
+            ViewModel = new SvgTemplateEditorViewModel();
+            DataContext = ViewModel;
+            // 确保变换绑定正确
+            ZoomTransform.ScaleX = ViewModel.ZoomLevel;
+            ZoomTransform.ScaleY = ViewModel.ZoomLevel;
+            Loaded += OnWindowLoaded;
         }
-        
-        private async void SvgTemplateEditorWindow_Loaded(object sender, RoutedEventArgs e)
+
+
+
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
         {
-            // 传递编辑器实例给视图模型
-            _viewModel.SetEditor(svgEditor);
+            // 初始化DPI自适应
+            UpdateDpiScaling();
             
-            // 初始化
-            await _viewModel.InitializeAsync();
-            
-            // 设置编辑器的事件处理
-            svgEditor.TextArea.Caret.PositionChanged += (s, args) => {
-                _viewModel.EditorPosition = $"{svgEditor.TextArea.Caret.Line}:{svgEditor.TextArea.Caret.Column}";
-            };
+            // 示例：加载默认模板
+            //ViewModel.LoadSvgFile("Resources/DefaultTemplate.svg");
+        }
+
+        private void UpdateDpiScaling()
+        {
+            var dpi = VisualTreeHelper.GetDpi(this);
+            ViewModel.ZoomLevel *= dpi.DpiScaleX;
         }
     }
 }
