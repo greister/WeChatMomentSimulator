@@ -97,10 +97,25 @@ namespace WeChatMomentSimulator.Desktop
                     
                     // 注册视图模型
                     services.AddSingleton<MainViewModel>();
-                    services.AddSingleton<PlaceholderEditorViewModel>();
-                    services.AddSingleton<SvgTemplateEditorViewModel>();
+                    // services.AddSingleton<PlaceholderEditorViewModel>();
+                    // services.AddSingleton<SvgTemplateEditorViewModel>();
                     //services.AddSingleton<SvgTemplateEditorViewModel328>();
                     
+                    // 注册编辑器相关服务
+                    services.AddSingleton<ITemplateRenderer, SharpVectorRenderer>();
+                    services.AddSingleton<ITemplateCombiner, TemplateCombiner>();
+            
+                    // 注册编辑器
+                    services.AddTransient<IPhoneTemplateEditor, PhoneTemplateEditor>();
+                    services.AddTransient<IContentTemplateEditor, ContentTemplateEditor>();
+            
+                    // 注册参数处理器
+                    services.AddTransient<IStatusBarParameterProcessor, StatusBarParameterProcessor>();
+                    services.AddTransient<IParameterPresetManager, ParameterPresetManager>();
+            
+                    // 注册视图模型
+                    services.AddTransient<PhoneTemplateEditorViewModel>();
+                    services.AddTransient<ContentTemplateEditorViewModel>();
                     
                     // 注册主窗口
                     services.AddSingleton<MainWindow>();

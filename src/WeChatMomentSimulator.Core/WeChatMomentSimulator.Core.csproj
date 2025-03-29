@@ -23,11 +23,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="DataBinding\" />
+	  <Compile Remove="Interfaces\Services\ITemplateService.cs" />
+	  <Compile Remove="DataBinding\**" />
+	  <Compile Remove="Models\Templates\PlaceholderDefinition.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Interfaces\Services\ITemplateService.cs" />
+	  <EmbeddedResource Remove="DataBinding\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="DataBinding\**" />
 	</ItemGroup>
 
 </Project>

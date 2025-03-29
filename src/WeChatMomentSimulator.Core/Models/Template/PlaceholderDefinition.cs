@@ -10,6 +10,11 @@ namespace WeChatMomentSimulator.Core.Models.Template
     public class PlaceholderDefinition
     {
         /// <summary>
+        /// id
+        /// </summary>
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        
+        /// <summary>
         /// 占位符名称
         /// </summary>
         public string Name { get; set; }

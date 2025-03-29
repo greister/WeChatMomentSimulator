@@ -104,12 +104,12 @@
         </MenuItem>
         
         <MenuItem Header="工具(_T)" Style="{StaticResource MenuItemStyle}">
-            <MenuItem Header="模板管理器..." Command="{Binding TemplateManagerCommand}" Click="OpenSvgEditor_Click">
+            <MenuItem Header="手机模板编辑器" Command="{Binding TemplateManagerCommand}" Click="OpenPhoneTemplateEditor">
                 <MenuItem.Icon>
                     <Image Source="/Assets/Icons/template.png" Width="16" Height="16"/>
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="模板管理器2..." Command="{Binding TemplateManagerCommand}" Click="OpenSvgEditor2_Click" >
+            <MenuItem Header="内容模板编辑器" Command="{Binding TemplateManagerCommand}" Click="OpenContentTemplateEditor" >
                 <MenuItem.Icon>
                     <Image Source="/Assets/Icons/template.png" Width="16" Height="16"/>
                 </MenuItem.Icon>
